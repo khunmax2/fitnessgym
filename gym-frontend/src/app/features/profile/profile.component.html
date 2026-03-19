@@ -1,0 +1,111 @@
+<div class="section-header animate-in">
+  <div>
+    <div class="page-title">My <span>Profile</span></div>
+    <div class="page-sub">จัดการข้อมูลบัญชีและรหัสผ่าน</div>
+  </div>
+</div>
+
+<div class="profile-grid animate-in">
+
+  <!-- LEFT: Avatar + Info -->
+  <mat-card class="table-card profile-card">
+    <div class="avatar-wrap">
+      <div class="big-avatar">{{ getInitials() }}</div>
+      <div class="av-name">{{ (authService.currentUser$ | async)?.name }}</div>
+      <div class="av-email">{{ (authService.currentUser$ | async)?.email }}</div>
+      <div class="role-badge" [class]="(authService.currentUser$ | async)?.role">
+        {{ (authService.currentUser$ | async)?.role | uppercase }}
+      </div>
+    </div>
+
+    <div class="info-list">
+      <div class="info-row">
+        <mat-icon>person</mat-icon>
+        <div>
+          <div class="info-label">Display Name</div>
+          <div class="info-val">{{ (authService.currentUser$ | async)?.name }}</div>
+        </div>
+      </div>
+      <div class="info-row">
+        <mat-icon>alternate_email</mat-icon>
+        <div>
+          <div class="info-label">Email</div>
+          <div class="info-val">{{ (authService.currentUser$ | async)?.email }}</div>
+        </div>
+      </div>
+      <div class="info-row">
+        <mat-icon>shield</mat-icon>
+        <div>
+          <div class="info-label">Role</div>
+          <div class="info-val">{{ (authService.currentUser$ | async)?.role }}</div>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+
+  <!-- RIGHT: Forms -->
+  <div class="forms-col">
+
+    <!-- Edit Name -->
+    <mat-card class="table-card form-card">
+      <div class="form-card-title"><mat-icon>edit</mat-icon> Edit Profile</div>
+      <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="gym-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Display Name</mat-label>
+          <mat-icon matPrefix>person</mat-icon>
+          <input matInput formControlName="name" placeholder="ชื่อ-นามสกุล">
+          <mat-error>Name is required</mat-error>
+        </mat-form-field>
+        <div style="display:flex;justify-content:flex-end">
+          <button class="gym-btn primary" type="submit" [disabled]="loading || profileForm.invalid">
+            {{ loading ? 'Saving...' : 'Save Changes' }}
+          </button>
+        </div>
+      </form>
+    </mat-card>
+
+    <!-- Change Password -->
+    <mat-card class="table-card form-card">
+      <div class="form-card-title"><mat-icon>lock</mat-icon> Change Password</div>
+      <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" class="gym-form">
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Current Password</mat-label>
+          <mat-icon matPrefix>lock_outline</mat-icon>
+          <input matInput [type]="showCurrent ? 'text' : 'password'" formControlName="currentPassword">
+          <mat-icon matSuffix (click)="showCurrent=!showCurrent" style="cursor:pointer">
+            {{ showCurrent ? 'visibility_off' : 'visibility' }}
+          </mat-icon>
+          <mat-error>Required</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>New Password</mat-label>
+          <mat-icon matPrefix>lock</mat-icon>
+          <input matInput [type]="showNew ? 'text' : 'password'" formControlName="newPassword">
+          <mat-icon matSuffix (click)="showNew=!showNew" style="cursor:pointer">
+            {{ showNew ? 'visibility_off' : 'visibility' }}
+          </mat-icon>
+          <mat-error>Minimum 6 characters</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Confirm New Password</mat-label>
+          <mat-icon matPrefix>lock</mat-icon>
+          <input matInput [type]="showConfirm ? 'text' : 'password'" formControlName="confirmPassword">
+          <mat-icon matSuffix (click)="showConfirm=!showConfirm" style="cursor:pointer">
+            {{ showConfirm ? 'visibility_off' : 'visibility' }}
+          </mat-icon>
+          <mat-error *ngIf="passwordForm.hasError('mismatch')">Passwords do not match</mat-error>
+        </mat-form-field>
+
+        <div style="display:flex;justify-content:flex-end">
+          <button class="gym-btn primary" type="submit" [disabled]="pwLoading || passwordForm.invalid">
+            {{ pwLoading ? 'Changing...' : 'Change Password' }}
+          </button>
+        </div>
+      </form>
+    </mat-card>
+
+  </div>
+</div>

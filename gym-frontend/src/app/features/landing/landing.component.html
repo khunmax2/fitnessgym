@@ -1,0 +1,306 @@
+<!-- NAVBAR -->
+<nav [class.scrolled]="isScrolled">
+  <div class="nav-logo" (click)="scrollTo('hero')">
+    <div class="nav-mark">FF</div>
+    <div class="nav-brand">FitPro</div>
+  </div>
+  <div class="nav-links">
+    <a (click)="scrollTo('classes')">Classes</a>
+    <a (click)="scrollTo('trainers')">Trainers</a>
+    <a (click)="scrollTo('pricing')">Pricing</a>
+    <a (click)="scrollTo('schedule')">Schedule</a>
+  </div>
+  <div class="nav-right">
+    <button class="nav-login" (click)="openLogin()">Sign In</button>
+    <button class="nav-cta" (click)="goRegister()">Join Now</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+  <div class="hero-watermark">FITPRO</div>
+
+  <div class="hero-content">
+    <div class="hero-tag">
+      <span class="tag-dot"></span>
+      Bangkok's Premier Fitness Club
+    </div>
+    <h1 class="hero-title">
+      PUSH YOUR<br>
+      <em>LIMITS.</em>
+    </h1>
+    <p class="hero-sub">
+      ยิมระดับพรีเมียม กลางกรุงเทพฯ พร้อมเทรนเนอร์มืออาชีพ<br>
+      คลาสออกกำลังกายหลากหลาย และอุปกรณ์ระดับโลก
+    </p>
+    <div class="hero-actions">
+      <button class="btn-primary-hero" (click)="goRegister()">
+        <mat-icon>bolt</mat-icon> Get Started
+      </button>
+      <button class="btn-outline-hero" (click)="scrollTo('classes')">
+        <mat-icon>play_circle</mat-icon> Explore Classes
+      </button>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="hs-item">
+      <div class="hs-num">1,<em>248</em></div>
+      <div class="hs-lbl">Active Members</div>
+    </div>
+    <div class="hs-item">
+      <div class="hs-num"><em>24</em></div>
+      <div class="hs-lbl">Expert Trainers</div>
+    </div>
+    <div class="hs-item">
+      <div class="hs-num"><em>48</em></div>
+      <div class="hs-lbl">Weekly Classes</div>
+    </div>
+    <div class="hs-item">
+      <div class="hs-num"><em>98%</em></div>
+      <div class="hs-lbl">Satisfaction Rate</div>
+    </div>
+  </div>
+
+  <div class="hero-scroll" (click)="scrollTo('classes')">
+    <div class="scroll-line"></div>
+    <div class="scroll-txt">Scroll</div>
+  </div>
+</section>
+
+<!-- CLASSES -->
+<section class="section-classes" id="classes">
+  <div class="section-header">
+    <div>
+      <div class="section-tag">What We Offer</div>
+      <div class="section-title">OUR <em>CLASSES</em></div>
+    </div>
+    <button class="btn-outline-sm">View All Classes</button>
+  </div>
+  <div class="classes-grid">
+    <div class="class-card" *ngFor="let c of classes" [style.--accent]="c.color">
+      <span class="cc-icon">{{ c.icon }}</span>
+      <div class="cc-name">{{ c.name }}</div>
+      <div class="cc-desc">{{ c.desc }}</div>
+      <div class="cc-meta">
+        <div class="cc-tag"><mat-icon>schedule</mat-icon> {{ c.duration }}</div>
+        <div class="cc-tag"><mat-icon>local_fire_department</mat-icon> {{ c.cal }}</div>
+      </div>
+      <mat-icon class="cc-arrow">arrow_forward</mat-icon>
+    </div>
+  </div>
+</section>
+
+<!-- TRAINERS -->
+<section class="section-trainers" id="trainers">
+  <div class="section-header">
+    <div>
+      <div class="section-tag">Meet The Team</div>
+      <div class="section-title">EXPERT <em>TRAINERS</em></div>
+      <div class="section-sub">เทรนเนอร์มืออาชีพ ผ่านการรับรองระดับสากล</div>
+    </div>
+  </div>
+  <div class="trainers-grid">
+    <div class="trainer-card" *ngFor="let t of trainers">
+      <div class="tc-img" [style.background]="t.bg">
+        <div class="tc-avatar" [style.color]="t.color + '55'">{{ t.initials }}</div>
+        <div class="tc-overlay"></div>
+        <div class="tc-badge" [style.background]="t.badgeColor">{{ t.badge }}</div>
+      </div>
+      <div class="tc-body">
+        <div class="tc-name">{{ t.name }}</div>
+        <div class="tc-spec" [style.color]="t.color">{{ t.specialty }}</div>
+        <div class="tc-stats">
+          <div class="tc-stat"><strong>{{ t.exp }}</strong>Years Exp.</div>
+          <div class="tc-stat"><strong>{{ t.rating }}★</strong>Rating</div>
+          <div class="tc-stat"><strong>{{ t.clients }}</strong>Clients</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="section-pricing" id="pricing">
+  <div class="pricing-header">
+    <div class="section-tag">Membership Plans</div>
+    <div class="section-title">SIMPLE <em>PRICING</em></div>
+    <div class="section-sub">เลือกแพ็กเกจที่เหมาะกับคุณ ไม่มีค่าธรรมเนียมซ่อนเร้น</div>
+  </div>
+  <div class="pricing-grid">
+    <!-- Monthly -->
+    <div class="price-card">
+      <div class="price-plan">Monthly</div>
+      <div class="price-val"><sup>฿</sup>2,500</div>
+      <div class="price-per">per month</div>
+      <div class="price-divider"></div>
+      <ul class="price-features">
+        <li><mat-icon>check_circle</mat-icon>Gym access 6am–10pm</li>
+        <li><mat-icon>check_circle</mat-icon>Locker & shower</li>
+        <li><mat-icon>check_circle</mat-icon>2 Group classes/month</li>
+        <li class="off"><mat-icon>cancel</mat-icon>Personal trainer session</li>
+        <li class="off"><mat-icon>cancel</mat-icon>Nutrition consultation</li>
+      </ul>
+      <button class="price-btn">Get Started <mat-icon>arrow_forward</mat-icon></button>
+    </div>
+    <!-- Yearly (featured) -->
+    <div class="price-card featured">
+      <div class="price-hot">Most Popular</div>
+      <div class="price-plan">Yearly</div>
+      <div class="price-val"><sup>฿</sup>12,000</div>
+      <div class="price-per">per year · save 60%</div>
+      <div class="price-divider"></div>
+      <ul class="price-features">
+        <li><mat-icon>check_circle</mat-icon>Unlimited gym access 24/7</li>
+        <li><mat-icon>check_circle</mat-icon>Locker & shower</li>
+        <li><mat-icon>check_circle</mat-icon>Unlimited group classes</li>
+        <li><mat-icon>check_circle</mat-icon>2 PT sessions/month</li>
+        <li><mat-icon>check_circle</mat-icon>Nutrition consultation</li>
+      </ul>
+      <button class="price-btn">Join Now <mat-icon>bolt</mat-icon></button>
+    </div>
+    <!-- Elite -->
+    <div class="price-card">
+      <div class="price-plan">Elite</div>
+      <div class="price-val"><sup>฿</sup>4,500</div>
+      <div class="price-per">per month</div>
+      <div class="price-divider"></div>
+      <ul class="price-features">
+        <li><mat-icon>check_circle</mat-icon>Unlimited gym access 24/7</li>
+        <li><mat-icon>check_circle</mat-icon>Premium locker & towel</li>
+        <li><mat-icon>check_circle</mat-icon>Unlimited group classes</li>
+        <li><mat-icon>check_circle</mat-icon>4 PT sessions/month</li>
+        <li><mat-icon>check_circle</mat-icon>Monthly nutrition plan</li>
+      </ul>
+      <button class="price-btn">Get Elite <mat-icon>arrow_forward</mat-icon></button>
+    </div>
+  </div>
+</section>
+
+<!-- SCHEDULE -->
+<section class="section-schedule" id="schedule">
+  <div class="section-header">
+    <div>
+      <div class="section-tag">This Week</div>
+      <div class="section-title">CLASS <em>SCHEDULE</em></div>
+    </div>
+    <button class="btn-outline-sm">Full Schedule</button>
+  </div>
+
+  <div class="sched-days">
+    <div class="sched-day"
+         *ngFor="let d of days; let i = index"
+         [class.active]="i === activeDay"
+         (click)="activeDay = i">
+      <div class="sd-name">{{ d }}</div>
+      <div class="sd-date">{{ dates[i] }}</div>
+    </div>
+  </div>
+
+  <div class="sched-list">
+    <div class="sched-item" *ngFor="let s of todaySchedule">
+      <div class="si-time">
+        <div class="si-h">{{ s.t }}</div>
+        <div class="si-ampm">{{ +s.t.split(':')[0] < 12 ? 'AM' : 'PM' }}</div>
+      </div>
+      <div class="si-info">
+        <div class="si-name">{{ s.cls }}</div>
+        <div class="si-trainer">by {{ s.tr }}</div>
+      </div>
+      <div class="si-cap">
+        <mat-icon>people</mat-icon> {{ s.cap }}/{{ s.max }}
+        <div class="si-track">
+          <div class="si-fill" [style.width.%]="getCapPct(s)" [style.background]="isFull(s) ? '#E8003D' : '#22c55e'"></div>
+        </div>
+      </div>
+      <button class="si-btn" [class.full]="isFull(s)" [disabled]="isFull(s)">
+        {{ isFull(s) ? 'Full' : 'Book Now' }}
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- CTA STRIP -->
+<div class="cta-strip">
+  <div class="cta-left">
+    <div class="section-tag" style="color:rgba(255,255,255,.6)">Limited Time Offer</div>
+    <div class="cta-title">START YOUR<br>JOURNEY TODAY.</div>
+    <div class="cta-sub">สมัครวันนี้ รับฟรี 1 เดือน + Personal Training Session</div>
+  </div>
+  <button class="cta-btn" (click)="goRegister()">
+    Claim Offer <mat-icon>arrow_forward</mat-icon>
+  </button>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">
+        <div class="nav-mark">FF</div>
+        <div class="nav-brand">FitPro</div>
+      </div>
+      <div class="footer-desc">ยิมระดับพรีเมียม ที่เชื่อว่าทุกคนมีศักยภาพไม่มีขีดจำกัด</div>
+    </div>
+    <div>
+      <div class="footer-title">Classes</div>
+      <ul class="footer-links">
+        <li>HIIT Extreme</li><li>Yoga Flow</li><li>Muay Thai</li><li>Spinning</li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-title">Company</div>
+      <ul class="footer-links">
+        <li>About Us</li><li>Trainers</li><li>Careers</li><li>Contact</li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-title">Contact</div>
+      <ul class="footer-links">
+        <li>📍 สีลม, กรุงเทพฯ</li>
+        <li>📞 02-XXX-XXXX</li>
+        <li>✉ hello&#64;fitpro.th</li>
+        <li>⏰ จ-ศ 6:00–22:00</li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2025 FitPro Gym · Angular + Node.js + Supabase</div>
+    <button class="staff-btn" (click)="openLogin()">
+      <mat-icon>admin_panel_settings</mat-icon> Staff Portal
+    </button>
+  </div>
+</footer>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" [class.open]="showLoginModal" (click)="closeLogin()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <button class="modal-close" (click)="closeLogin()"><mat-icon>close</mat-icon></button>
+    <div class="modal-tag">Staff Access Only</div>
+    <div class="modal-title">SIGN IN</div>
+    <form [formGroup]="staffLoginForm" (ngSubmit)="staffLoginSubmit()" class="modal-form">
+      <div class="m-label">Email Address</div>
+      <div class="m-field" [class.error]="staffLoginForm.get('email')?.invalid && staffLoginForm.get('email')?.touched">
+        <mat-icon>alternate_email</mat-icon>
+        <input formControlName="email" type="email" placeholder="admin@fitpro.th">
+      </div>
+      <div class="m-label">Password</div>
+      <div class="m-field" [class.error]="staffLoginForm.get('password')?.invalid && staffLoginForm.get('password')?.touched">
+        <mat-icon>lock_outline</mat-icon>
+        <input formControlName="password" type="password" placeholder="••••••••">
+      </div>
+      <div class="error-msg" *ngIf="staffLoginError">
+        <mat-icon>error_outline</mat-icon> {{ staffLoginError }}
+      </div>
+      <button class="modal-btn" type="submit" [disabled]="staffLoginLoading || staffLoginForm.invalid">
+        <span *ngIf="!staffLoginLoading">LOGIN <mat-icon>arrow_forward</mat-icon></span>
+        <span *ngIf="staffLoginLoading">Authenticating...</span>
+      </button>
+    </form>
+    <div class="modal-note">ระบบสำหรับเจ้าหน้าที่และสมาชิกเท่านั้น</div>
+  </div>
+</div>

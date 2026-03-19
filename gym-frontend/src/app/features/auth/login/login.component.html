@@ -1,0 +1,61 @@
+<div class="login-shell">
+  <!-- LEFT PANEL -->
+  <div class="login-left">
+    <div class="left-logo">
+      <div class="logo-mark">FF</div>
+      <div class="logo-text">GYM PRO</div>
+    </div>
+    <div class="left-hero">
+      <div class="hero-tag">Management System</div>
+      <h1 class="hero-title">PUSH YOUR<br><span>LIMITS.</span></h1>
+      <p class="hero-sub">ระบบจัดการยิมและฟิตเนส ครบวงจร</p>
+    </div>
+    <div class="left-stats">
+      <div class="mini-stat"><div class="mini-val">1,248</div><div class="mini-label">Members</div></div>
+      <div class="mini-divider"></div>
+      <div class="mini-stat"><div class="mini-val">24</div><div class="mini-label">Trainers</div></div>
+      <div class="mini-divider"></div>
+      <div class="mini-stat"><div class="mini-val">48</div><div class="mini-label">Classes</div></div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="login-right">
+    <div class="login-box">
+      <div class="login-header">
+        <div class="login-tag">Welcome back</div>
+        <h2 class="login-title">SIGN IN</h2>
+      </div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+        <div class="field-wrap">
+          <label class="field-label">Email Address</label>
+          <div class="field-input" [class.error]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+            <mat-icon>alternate_email</mat-icon>
+            <input formControlName="email" type="email" placeholder="admin@gym.com">
+          </div>
+        </div>
+
+        <div class="field-wrap">
+          <label class="field-label">Password</label>
+          <div class="field-input" [class.error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+            <mat-icon>lock_outline</mat-icon>
+            <input formControlName="password" [type]="showPass ? 'text' : 'password'" placeholder="••••••••">
+            <mat-icon class="toggle-pass" (click)="showPass=!showPass">
+              {{ showPass ? 'visibility_off' : 'visibility' }}
+            </mat-icon>
+          </div>
+        </div>
+
+        <div class="error-msg" *ngIf="errorMsg">
+          <mat-icon>error_outline</mat-icon> {{ errorMsg }}
+        </div>
+
+        <button type="submit" class="login-btn" [disabled]="loading || loginForm.invalid">
+          <span *ngIf="!loading">LOGIN <mat-icon>arrow_forward</mat-icon></span>
+          <span *ngIf="loading">Authenticating...</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,102 @@
+<div class="register-shell">
+
+  <!-- LEFT -->
+  <div class="reg-left">
+    <div class="ll-logo">
+      <div class="ll-mark">FF</div>
+      <div class="ll-txt">FitPro</div>
+    </div>
+    <div class="ll-hero">
+      <div class="ll-tag">New Member</div>
+      <div class="ll-title">JOIN THE<br><em>FAMILY.</em></div>
+      <div class="ll-sub">สมัครสมาชิกวันนี้ เข้าถึงคลาสออกกำลังกาย เทรนเนอร์มืออาชีพ และแผนโภชนาการส่วนตัว</div>
+    </div>
+    <div class="ll-perks">
+      <div class="perk"><span class="perk-icon">✓</span> เข้าถึงคลาสทั้งหมด</div>
+      <div class="perk"><span class="perk-icon">✓</span> ติดตาม Progress ของตัวเอง</div>
+      <div class="perk"><span class="perk-icon">✓</span> ดู Diet Plans จากเทรนเนอร์</div>
+      <div class="perk"><span class="perk-icon">✓</span> จองคลาสล่วงหน้าได้</div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="reg-right">
+    <div class="reg-box">
+      <div class="rb-tag">Create Account</div>
+      <div class="rb-title">SIGN UP</div>
+      <div class="rb-sub">ได้รับสิทธิ์ <span class="role-pill">Member</span> ทันที</div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="reg-form">
+
+        <div class="field-wrap">
+          <div class="field-label">Full Name</div>
+          <div class="field-input" [class.err]="form.get('name')?.invalid && form.get('name')?.touched">
+            <mat-icon>person</mat-icon>
+            <input formControlName="name" placeholder="ชื่อ นามสกุล">
+          </div>
+          <div class="field-error" *ngIf="form.get('name')?.invalid && form.get('name')?.touched">
+            กรุณากรอกชื่ออย่างน้อย 2 ตัวอักษร
+          </div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">Email Address</div>
+          <div class="field-input" [class.err]="form.get('email')?.invalid && form.get('email')?.touched">
+            <mat-icon>alternate_email</mat-icon>
+            <input formControlName="email" type="email" placeholder="email@example.com">
+          </div>
+          <div class="field-error" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
+            กรุณากรอก email ให้ถูกต้อง
+          </div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">Phone <span class="optional">(optional)</span></div>
+          <div class="field-input">
+            <mat-icon>phone</mat-icon>
+            <input formControlName="phone" placeholder="08x-xxx-xxxx">
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="field-wrap">
+            <div class="field-label">Password</div>
+            <div class="field-input" [class.err]="form.get('password')?.invalid && form.get('password')?.touched">
+              <mat-icon>lock_outline</mat-icon>
+              <input formControlName="password" [type]="showPass ? 'text' : 'password'" placeholder="อย่างน้อย 6 ตัว">
+              <mat-icon class="eye" (click)="showPass=!showPass">{{ showPass ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </div>
+          </div>
+          <div class="field-wrap">
+            <div class="field-label">Confirm Password</div>
+            <div class="field-input" [class.err]="form.hasError('mismatch') && form.get('confirmPassword')?.touched">
+              <mat-icon>lock</mat-icon>
+              <input formControlName="confirmPassword" [type]="showConfirm ? 'text' : 'password'" placeholder="ยืนยันรหัสผ่าน">
+              <mat-icon class="eye" (click)="showConfirm=!showConfirm">{{ showConfirm ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </div>
+            <div class="field-error" *ngIf="form.hasError('mismatch') && form.get('confirmPassword')?.touched">
+              รหัสผ่านไม่ตรงกัน
+            </div>
+          </div>
+        </div>
+
+        <div class="error-box" *ngIf="errorMsg">
+          <mat-icon>error_outline</mat-icon> {{ errorMsg }}
+        </div>
+
+        <button type="submit" class="reg-btn" [disabled]="loading || form.invalid">
+          <ng-container *ngIf="!loading">
+            สมัครสมาชิก <mat-icon>arrow_forward</mat-icon>
+          </ng-container>
+          <ng-container *ngIf="loading">กำลังสมัคร...</ng-container>
+        </button>
+
+        <div class="login-link">
+          มีบัญชีอยู่แล้ว? <span (click)="goLogin()">เข้าสู่ระบบ</span>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+</div>

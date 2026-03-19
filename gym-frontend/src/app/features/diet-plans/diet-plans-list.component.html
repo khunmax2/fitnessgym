@@ -1,0 +1,44 @@
+<div class="section-header animate-in">
+  <div>
+    <div class="page-title">Diet <span>List</span></div>
+    <div class="page-sub">Manage all Diet Plans</div>
+  </div>
+  <button class="gym-btn primary" (click)="openForm()">
+    <mat-icon>add</mat-icon> Add New
+  </button>
+</div>
+
+<mat-card class="table-card animate-in">
+  <div class="search-row">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput (input)="applyFilter($event)" placeholder="Search Diet Plans...">
+    </mat-form-field>
+  </div>
+
+  <mat-table [dataSource]="dataSource">
+    <ng-container *ngFor="let col of displayedColumns.slice(0,-1)" [matColumnDef]="col">
+      <mat-header-cell *matHeaderCellDef>{{ col | titlecase }}</mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <span *ngIf="col !== 'status'">{{ row[col] }}</span>
+        <span *ngIf="col === 'status'" class="gym-badge" [class]="row[col]">{{ row[col] }}</span>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <button mat-icon-button (click)="openForm(row)" style="color:#888"><mat-icon>edit</mat-icon></button>
+        <button mat-icon-button (click)="delete(row.id)" style="color:#e8003d"><mat-icon>delete_outline</mat-icon></button>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    <tr class="mat-row no-data-row" *matNoDataRow>
+      <td [attr.colspan]="displayedColumns.length">{{ loading ? 'Loading...' : 'No data found' }}</td>
+    </tr>
+  </mat-table>
+
+  <mat-paginator [pageSizeOptions]="[10,25,50]" showFirstLastButtons></mat-paginator>
+</mat-card>

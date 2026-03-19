@@ -1,0 +1,132 @@
+<!-- STATS -->
+<div class="stats-grid animate-in">
+  <div class="stat-card">
+    <div class="stat-icon">👥</div>
+    <div class="stat-label">Total Users</div>
+    <div class="stat-value">{{ total }}</div>
+    <div class="stat-sub">All registered accounts</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">🏃</div>
+    <div class="stat-label">Members</div>
+    <div class="stat-value"><span>{{ members }}</span></div>
+    <div class="stat-sub">สมาชิกทั่วไป</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">💪</div>
+    <div class="stat-label">Trainers</div>
+    <div class="stat-value"><span>{{ trainers }}</span></div>
+    <div class="stat-sub">ผู้ฝึกสอน</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">🛡️</div>
+    <div class="stat-label">Staff & Admin</div>
+    <div class="stat-value"><span>{{ admins }}</span></div>
+    <div class="stat-sub">เจ้าหน้าที่</div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="section-header animate-in">
+  <div>
+    <div class="page-title">User <span>Management</span></div>
+    <div class="page-sub">Admin เท่านั้น — จัดการบัญชีและสิทธิ์ผู้ใช้ทั้งหมด</div>
+  </div>
+</div>
+
+<!-- ROLE GUIDE -->
+<div class="role-guide animate-in">
+  <div class="rg-title">Role Permissions</div>
+  <div class="rg-list">
+    <div class="rg-item" *ngFor="let r of [
+      {role:'member',  icon:'🏃', color:'#22c55e', desc:'ดู Classes / Schedule / Progress ของตัวเอง'},
+      {role:'trainer', icon:'💪', color:'#f59e0b', desc:'จัดการ Diet Plans / Progress / ดู Classes'},
+      {role:'staff',   icon:'🧑‍💼', color:'#60a5fa', desc:'CRUD ส่วนใหญ่ ยกเว้น Delete'},
+      {role:'admin',   icon:'👑', color:'#E8003D', desc:'สิทธิ์สูงสุด รวม User Management'}
+    ]">
+      <span class="rg-badge" [style.background]="r.color + '20'" [style.color]="r.color">{{ r.role }}</span>
+      <span class="rg-icon">{{ r.icon }}</span>
+      <span class="rg-desc">{{ r.desc }}</span>
+    </div>
+  </div>
+</div>
+
+<!-- TABLE -->
+<mat-card class="table-card animate-in">
+  <div class="search-row">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput (input)="applyFilter($event)" placeholder="Search users...">
+    </mat-form-field>
+  </div>
+
+  <mat-table [dataSource]="dataSource">
+
+    <!-- User -->
+    <ng-container matColumnDef="user">
+      <mat-header-cell *matHeaderCellDef>User</mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <div class="member-name">
+          <div class="member-avatar"
+               [style.background]="getRoleBg(row.role)"
+               [style.color]="getRoleColor(row.role)">
+            {{ getInitials(row.name) }}
+          </div>
+          {{ row.name }}
+        </div>
+      </mat-cell>
+    </ng-container>
+
+    <!-- Email -->
+    <ng-container matColumnDef="email">
+      <mat-header-cell *matHeaderCellDef>Email</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{ row.email }}</mat-cell>
+    </ng-container>
+
+    <!-- Phone -->
+    <ng-container matColumnDef="phone">
+      <mat-header-cell *matHeaderCellDef>Phone</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{ row.phone || '—' }}</mat-cell>
+    </ng-container>
+
+    <!-- Role (editable dropdown) -->
+    <ng-container matColumnDef="role">
+      <mat-header-cell *matHeaderCellDef>Role</mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <select class="role-select"
+          [(ngModel)]="row.role"
+          [style.color]="getRoleColor(row.role)"
+          (change)="changeRole(row.id, $any($event.target).value)">
+          <option *ngFor="let r of roles" [value]="r" [style.color]="getRoleColor(r)">
+            {{ getRoleLabel(r) }}
+          </option>
+        </select>
+      </mat-cell>
+    </ng-container>
+
+    <!-- Joined -->
+    <ng-container matColumnDef="joined">
+      <mat-header-cell *matHeaderCellDef>Joined</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{ row.created_at | date:'dd MMM yyyy' }}</mat-cell>
+    </ng-container>
+
+    <!-- Actions -->
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <button mat-icon-button (click)="deleteUser(row.id)"
+                style="color:#e8003d" matTooltip="Delete user">
+          <mat-icon>delete_outline</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    <tr class="mat-row no-data-row" *matNoDataRow>
+      <td [attr.colspan]="displayedColumns.length">{{ loading ? 'Loading...' : 'No users found' }}</td>
+    </tr>
+  </mat-table>
+
+  <mat-paginator [pageSizeOptions]="[10,25,50]" showFirstLastButtons></mat-paginator>
+</mat-card>

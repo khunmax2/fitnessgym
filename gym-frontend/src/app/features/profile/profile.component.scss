@@ -1,0 +1,47 @@
+.section-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; }
+.animate-in { animation:fadeUp .4s ease both; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+.profile-grid { display:grid; grid-template-columns:280px 1fr; gap:20px; }
+
+.profile-card { padding:0 !important; }
+.avatar-wrap {
+  display:flex; flex-direction:column; align-items:center;
+  padding:32px 24px; border-bottom:1px solid #1e1e1e;
+}
+.big-avatar {
+  width:80px; height:80px; border-radius:50%;
+  background:var(--red); display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-head); font-size:28px; font-weight:800;
+  margin-bottom:14px;
+}
+.av-name { font-size:16px; font-weight:600; color:var(--text); margin-bottom:4px; }
+.av-email { font-size:12px; color:var(--muted); margin-bottom:12px; }
+.role-badge {
+  font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase;
+  padding:4px 12px; border-radius:2px;
+  &.admin { background:rgba(232,0,61,.12); color:#E8003D; }
+  &.staff { background:rgba(59,130,246,.1); color:#60a5fa; }
+}
+
+.info-list { padding:16px 20px; display:flex; flex-direction:column; gap:0; }
+.info-row {
+  display:flex; align-items:flex-start; gap:12px;
+  padding:12px 0; border-bottom:1px solid #1a1a1a;
+  &:last-child { border-bottom:none; }
+  mat-icon { color:var(--muted); font-size:18px!important; margin-top:2px; flex-shrink:0; }
+}
+.info-label { font-size:10px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:var(--muted); margin-bottom:3px; }
+.info-val { font-size:13px; color:var(--muted2); }
+
+.forms-col { display:flex; flex-direction:column; gap:16px; }
+.form-card { padding:0 !important; }
+.form-card-title {
+  display:flex; align-items:center; gap:8px;
+  padding:16px 20px; border-bottom:1px solid #1e1e1e;
+  font-family:var(--font-head); font-size:16px; font-weight:700;
+  letter-spacing:1px; text-transform:uppercase;
+  mat-icon { color:var(--red); font-size:18px!important; }
+}
+.gym-form { padding:20px; display:flex; flex-direction:column; gap:4px; }
+.full-width { width:100%; }

@@ -1,0 +1,100 @@
+<!-- STATS -->
+<div class="stats-grid animate-in">
+  <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-label">Total Members</div><div class="stat-value">{{ total }}</div><div class="stat-sub">All registered</div></div>
+  <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-label">Active</div><div class="stat-value"><span>{{ activeCount }}</span></div><div class="stat-sub">Currently active</div></div>
+  <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-label">Yearly</div><div class="stat-value">{{ yearlyCount }}</div><div class="stat-sub">Annual plan</div></div>
+  <div class="stat-card"><div class="stat-icon">⚠️</div><div class="stat-label">Expired</div><div class="stat-value"><span>{{ expiredCount }}</span></div><div class="stat-sub" style="color:#e8003d">Needs renewal</div></div>
+</div>
+
+<div class="section-header animate-in">
+  <div>
+    <div class="page-title">Member <span>List</span></div>
+    <div class="page-sub">{{ total }} members registered</div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <!-- Export buttons -->
+    <button class="gym-btn outline" style="clip-path:none" (click)="exportCSV()" title="Export CSV">
+      <mat-icon>download</mat-icon> CSV
+    </button>
+    <button class="gym-btn outline" style="clip-path:none" (click)="exportPDF()" title="Export PDF">
+      <mat-icon>picture_as_pdf</mat-icon> PDF
+    </button>
+    <!-- Add — only if can create -->
+    <button class="gym-btn primary" (click)="openForm()" *ngIf="perm.canCreate('members')">
+      <mat-icon>add</mat-icon> Add Member
+    </button>
+  </div>
+</div>
+
+<mat-card class="table-card animate-in">
+  <div class="search-row">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput (input)="applyFilter($event)" placeholder="Search members...">
+    </mat-form-field>
+  </div>
+
+  <mat-table [dataSource]="dataSource">
+    <ng-container matColumnDef="name">
+      <mat-header-cell *matHeaderCellDef>Member</mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <div class="member-name">
+          <div class="member-avatar" [style.background]="getAvatarBg(row.name)">{{ getInitials(row.name) }}</div>
+          {{ row.name }}
+        </div>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="email">
+      <mat-header-cell *matHeaderCellDef>Email</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{ row.email }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="membership_type">
+      <mat-header-cell *matHeaderCellDef>Type</mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <span class="gym-badge" [class]="row.membership_type">{{ row.membership_type }}</span>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <span class="gym-badge" [class]="row.status">{{ row.status }}</span>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="end_date">
+      <mat-header-cell *matHeaderCellDef>Expiry</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{ row.end_date | date:'dd MMM yyyy' }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <!-- Edit: admin only -->
+        <button mat-icon-button (click)="openForm(row)"
+                [disabled]="!perm.canUpdate('members')"
+                [matTooltip]="perm.canUpdate('members') ? 'Edit' : 'Admin only'"
+                style="color:#888">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <!-- Delete: admin only -->
+        <button mat-icon-button (click)="delete(row.id)"
+                [disabled]="!perm.canDelete('members')"
+                [matTooltip]="perm.canDelete('members') ? 'Delete' : 'Admin only'"
+                style="color:#e8003d">
+          <mat-icon>delete_outline</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    <tr class="mat-row no-data-row" *matNoDataRow>
+      <td [attr.colspan]="displayedColumns.length">{{ loading ? 'Loading...' : 'No members found' }}</td>
+    </tr>
+  </mat-table>
+
+  <mat-paginator [pageSizeOptions]="[10,25,50]" showFirstLastButtons></mat-paginator>
+</mat-card>

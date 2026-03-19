@@ -4,13 +4,13 @@
 
 ## Tech Stack
 
-| ส่วน | Technology |
-|------|-----------|
-| Frontend | Angular 17 + Angular Material |
-| Backend | Node.js + Express |
-| Database | Supabase (PostgreSQL) |
-| Auth | JWT (jsonwebtoken + bcryptjs) |
-| Container | Docker + Docker Compose |
+|     ส่วน   |          Technology           |
+|-----------|-------------------------------|
+| Frontend  | Angular 17 + Angular Material |
+| Backend   | Node.js + Express             |
+| Database  | Supabase (PostgreSQL)         |
+| Auth      | JWT (jsonwebtoken + bcryptjs) |
+| Container | Docker + Docker Compose       |
 
 ## Modules
 
@@ -27,33 +27,54 @@
 
 ## 🚀 Getting Started
 
+### 🔧 Prerequisites
+
+- [Node.js](https://nodejs.org/) >= 18 (comes with npm)
+- Git
+- Optional: Docker / Docker Compose (ถ้าต้องการรันทั้งระบบแบบ container)
+
+---
+
 ### 1. ตั้งค่า Supabase Database
 
 1. ไปที่ [supabase.com](https://supabase.com) → สร้าง project ใหม่
-2. ไปที่ **SQL Editor** → วางและ run ไฟล์ `gym-backend/schema.sql`
+2. ไปที่ **SQL Editor** → วางและรันไฟล์ `gym-backend/schema.sql`
 3. คัดลอก **Project URL** และ **anon key** จาก Settings → API
 
-### 2. ตั้งค่า Backend
+> บันทึกค่า 2 ตัวนี้ไว้ เพราะจะต้องใช้ในขั้นตอนตั้งค่า backend
+
+---
+
+### 2. ตั้งค่า Backend (API)
 
 ```bash
 cd gym-backend
 cp .env.example .env
-# แก้ไขค่าใน .env
-npm install
-npm run dev
 ```
 
-ไฟล์ `.env`:
-```
+แก้ไฟล์ `.env` ให้ใส่ค่า Supabase ที่ได้จากขั้นตอนก่อนหน้า:
+
+```env
 PORT=3000
-SUPABASE_URL=https://xxxx.supabase.co
-SUPABASE_KEY=your-anon-key
+SUPABASE_URL=https://<your-project>.supabase.co
+SUPABASE_KEY=<your-anon-key>
 JWT_SECRET=my-super-secret-key-change-this
 JWT_EXPIRES_IN=7d
 ```
 
+ติดตั้ง dependencies และรัน backend:
 
-### 3. ตั้งค่า Frontend
+```bash
+cd gym-backend
+npm install
+npm run dev
+```
+
+> API จะรันที่ `http://localhost:3000/api`
+
+---
+
+### 3. ตั้งค่า Frontend (Angular)
 
 ```bash
 cd gym-frontend
@@ -61,22 +82,63 @@ npm install
 npm start
 ```
 
-เปิด browser ที่ `http://localhost:4200`
+เปิดเว็บเบราว์เซอร์ที่ `http://localhost:4200`
 
-**Login**: ปุ่มเข้าสู่ระบบในหน้าแรกใช้สำหรับทุก role (Admin, Staff, Member, Trainer, Member) ไม่ใช่เฉพาะ staff
-แนะนำให้ใช้คำว่า "เข้าสู่ระบบ" หรือ "Login" แทน "Staff Login"
+> Frontend จะเรียก API ที่ `http://localhost:3000/api` (กำหนดใน `proxy.conf.json` แล้ว)
+
+---
 
 ### 4. รันด้วย Docker (ทางเลือก)
 
 ```bash
-# ที่ root folder
+# ที่ root folder ของโปรเจค
 cp gym-backend/.env.example gym-backend/.env
-# แก้ไข .env ก่อน แล้ว:
+# แก้ไข .env ตามค่า Supabase ของคุณ แล้ว:
 docker-compose up --build
 ```
 
 - Frontend: `http://localhost`
 - Backend API: `http://localhost:3000/api`
+
+---
+
+## ✨ ฟีเจอร์ของระบบ (Key Features)
+
+### 🧑‍🤝‍🧑 User Management
+- สมัครสมาชิก / เข้าสู่ระบบ (JWT)
+- สิทธิ์แต่ละ role (Admin / Staff / Trainer / Member)
+- Admin จัดการบัญชีผู้ใช้ (แก้ role / ลบผู้ใช้)
+- แสดงสถิติสมาชิก (จำนวนทั้งหมด, trainer, member, staff/admin)
+
+### 🧑‍🏫 Trainers / Members
+- จัดการข้อมูลสมาชิกและเทรนเนอร์ (CRUD)
+- ระบบค้นหาและกรองข้อมูล
+
+### 🏋️ Classes / Schedules
+- สร้าง-แก้ไข/ลบคลาสออกกำลังกาย
+- ตารางนัดหมาย (Schedule)
+- จัดการการลงทะเบียนเข้าคลาส
+
+### 🍽️ Diet Plans
+- จัดการแผนโภชนาการสำหรับสมาชิก
+- กำหนดโปรแกรมโภชนาการตามผู้ใช้งาน
+
+### 🧾 Progress Reports
+- บันทึกและติดตามความก้าวหน้าของสมาชิก
+- รายงานแสดงข้อมูลความคืบหน้าและการเปลี่ยนแปลง
+
+### 💳 Payments
+- บันทึกการชำระเงินของสมาชิก
+- จัดการสถานะการชำระเงิน
+
+### 🧰 Equipment
+- จัดการข้อมูลอุปกรณ์ในยิม (CRUD)
+
+---
+
+## 🗂️ โครงสร้างโปรเจค (Project Structure)
+
+...existing code...
 
 ---
 

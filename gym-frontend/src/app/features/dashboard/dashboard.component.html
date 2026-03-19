@@ -1,0 +1,150 @@
+<div *ngIf="loading" class="loading-wrap">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Loading dashboard...</div>
+</div>
+
+<ng-container *ngIf="!loading">
+
+<!-- WELCOME -->
+<div class="welcome-row animate-in">
+  <div>
+    <div class="page-title">Dashboard <span>Overview</span></div>
+    <div class="page-sub">ภาพรวมระบบ Fitness & Gym Management</div>
+  </div>
+  <div class="date-badge">
+    <mat-icon>calendar_today</mat-icon>
+    {{ today | date:'EEEE, d MMMM yyyy' }}
+  </div>
+</div>
+
+<!-- STATS ROW -->
+<div class="stats-grid animate-in">
+  <div class="stat-card">
+    <div class="stat-icon">👥</div>
+    <div class="stat-label">Total Members</div>
+    <div class="stat-value">{{ stats.members | number }}</div>
+    <div class="stat-sub"><span class="up">↑ 12%</span> vs last month</div>
+  </div>
+  <div class="stat-card featured">
+    <div class="stat-icon">💰</div>
+    <div class="stat-label">Revenue (THB)</div>
+    <div class="stat-value">{{ formatCurrency(stats.revenue) }}</div>
+    <div class="stat-sub"><span class="up">↑ 23%</span> this month</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">✅</div>
+    <div class="stat-label">Active Members</div>
+    <div class="stat-value">{{ stats.activeMembers | number }}</div>
+    <div class="stat-sub">{{ stats.members > 0 ? ((stats.activeMembers/stats.members)*100 | number:'1.0-0') : 0 }}% of total</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">💪</div>
+    <div class="stat-label">Trainers</div>
+    <div class="stat-value">{{ stats.trainers }}</div>
+    <div class="stat-sub">{{ stats.classes }} active classes</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">⚠️</div>
+    <div class="stat-label">Expired Members</div>
+    <div class="stat-value warn">{{ stats.expiredMembers }}</div>
+    <div class="stat-sub warn">Needs renewal</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">⏳</div>
+    <div class="stat-label">Pending Payments</div>
+    <div class="stat-value warn">{{ stats.pendingPayments }}</div>
+    <div class="stat-sub warn">Awaiting payment</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">🏋️</div>
+    <div class="stat-label">Equipment</div>
+    <div class="stat-value">{{ stats.equipment }}</div>
+    <div class="stat-sub">Items tracked</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-icon">🏃</div>
+    <div class="stat-label">Classes</div>
+    <div class="stat-value">{{ stats.classes }}</div>
+    <div class="stat-sub">Available classes</div>
+  </div>
+</div>
+
+<!-- CHARTS ROW -->
+<div class="charts-row animate-in">
+  <mat-card class="table-card chart-card">
+    <div class="chart-header">
+      <div class="chart-title">Revenue <span>Monthly</span></div>
+      <div class="chart-sub">6 เดือนล่าสุด</div>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="revenueChart"></canvas>
+    </div>
+  </mat-card>
+
+  <mat-card class="table-card chart-card chart-sm">
+    <div class="chart-header">
+      <div class="chart-title">Member <span>Status</span></div>
+      <div class="chart-sub">สัดส่วนสมาชิก</div>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="memberChart"></canvas>
+    </div>
+    <div class="donut-center">
+      <div class="donut-num">{{ stats.members }}</div>
+      <div class="donut-lbl">Total</div>
+    </div>
+  </mat-card>
+</div>
+
+<!-- BOTTOM ROW -->
+<div class="bottom-row animate-in">
+
+  <!-- Recent Members -->
+  <mat-card class="table-card">
+    <div class="search-row" style="border-bottom:1px solid #1e1e1e;padding:16px 20px">
+      <div class="section-title" style="font-size:18px">Recent <span>Members</span></div>
+      <a routerLink="/dashboard/members" class="see-all">See all <mat-icon>arrow_forward</mat-icon></a>
+    </div>
+    <mat-table [dataSource]="recentMembers">
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef>Member</mat-header-cell>
+        <mat-cell *matCellDef="let r">
+          <div class="member-name">
+            <div class="member-avatar" [style.background]="getAvatarBg(r.name)">{{ getInitials(r.name) }}</div>
+            {{ r.name }}
+          </div>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="membership_type">
+        <mat-header-cell *matHeaderCellDef>Type</mat-header-cell>
+        <mat-cell *matCellDef="let r"><span class="gym-badge" [class]="r.membership_type">{{ r.membership_type }}</span></mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="status">
+        <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
+        <mat-cell *matCellDef="let r"><span class="gym-badge" [class]="r.status">{{ r.status }}</span></mat-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="['name','membership_type','status']"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: ['name','membership_type','status'];"></mat-row>
+    </mat-table>
+  </mat-card>
+
+  <!-- Activity Feed -->
+  <mat-card class="table-card activity-card">
+    <div style="padding:16px 20px;border-bottom:1px solid #1e1e1e">
+      <div class="section-title" style="font-size:18px">Recent <span>Activity</span></div>
+    </div>
+    <div class="activity-list">
+      <div class="activity-item" *ngFor="let a of activities">
+        <div class="act-dot" [style.background]="a.color">{{ a.icon }}</div>
+        <div class="act-body">
+          <div class="act-text">{{ a.text }}</div>
+          <div class="act-time">{{ a.time }}</div>
+        </div>
+      </div>
+      <div *ngIf="!activities.length" class="no-activity">ไม่มีกิจกรรมล่าสุด</div>
+    </div>
+  </mat-card>
+
+</div>
+
+</ng-container>

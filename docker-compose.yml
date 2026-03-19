@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  gym-backend:
+    build: ./gym-backend
+    container_name: gym-backend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./gym-backend/.env
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    networks:
+      - gym-network
+
+  gym-frontend:
+    build: ./gym-frontend
+    container_name: gym-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - gym-backend
+    restart: unless-stopped
+    networks:
+      - gym-network
+
+networks:
+  gym-network:
+    driver: bridge

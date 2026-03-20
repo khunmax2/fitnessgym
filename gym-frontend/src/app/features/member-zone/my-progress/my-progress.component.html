@@ -1,0 +1,102 @@
+<div class="section-header animate-in">
+  <div>
+    <div class="page-title">ความ<span>ก้าวหน้า</span></div>
+    <div class="page-sub">ติดตามผลร่างกายของคุณ</div>
+  </div>
+</div>
+
+<div *ngIf="loading" class="loading-wrap">
+  <div class="loading-spinner"></div>
+</div>
+
+<ng-container *ngIf="!loading">
+
+  <!-- Latest Metrics -->
+  <ng-container *ngIf="latestReport">
+    <div class="metrics-label animate-in">รายงานล่าสุด · {{ latestReport.report_date | date:'dd MMMM yyyy' }}</div>
+    <div class="metrics-grid animate-in">
+      <div class="metric-card">
+        <div class="m-label">น้ำหนัก</div>
+        <div class="m-value">{{ latestReport.weight ?? '-' }}</div>
+        <div class="m-unit">kg</div>
+        <div class="m-diff" *ngIf="diff('weight') !== null" [class]="diffClass('weight')">
+          {{ diffSign('weight') }}{{ diff('weight') }}
+        </div>
+      </div>
+      <div class="metric-card featured">
+        <div class="m-label">BMI</div>
+        <div class="m-value">{{ latestReport.bmi ?? '-' }}</div>
+        <div class="m-unit">index</div>
+        <div class="m-diff" *ngIf="diff('bmi') !== null" [class]="diffClass('bmi')">
+          {{ diffSign('bmi') }}{{ diff('bmi') }}
+        </div>
+      </div>
+      <div class="metric-card">
+        <div class="m-label">ส่วนสูง</div>
+        <div class="m-value">{{ latestReport.height ?? '-' }}</div>
+        <div class="m-unit">cm</div>
+      </div>
+      <div class="metric-card">
+        <div class="m-label">ไขมัน</div>
+        <div class="m-value">{{ latestReport.body_fat_percent ?? '-' }}</div>
+        <div class="m-unit">%</div>
+        <div class="m-diff" *ngIf="diff('body_fat_percent') !== null" [class]="diffClass('body_fat_percent')">
+          {{ diffSign('body_fat_percent') }}{{ diff('body_fat_percent') }}
+        </div>
+      </div>
+      <div class="metric-card">
+        <div class="m-label">กล้ามเนื้อ</div>
+        <div class="m-value">{{ latestReport.muscle_mass ?? '-' }}</div>
+        <div class="m-unit">kg</div>
+        <div class="m-diff" *ngIf="diff('muscle_mass') !== null" [class]="diffClass('muscle_mass', false)">
+          {{ diffSign('muscle_mass') }}{{ diff('muscle_mass') }}
+        </div>
+      </div>
+      <div class="metric-card">
+        <div class="m-label">BMR</div>
+        <div class="m-value">{{ latestReport.bmr ?? '-' }}</div>
+        <div class="m-unit">kcal/day</div>
+      </div>
+    </div>
+
+    <!-- Body Measurements -->
+    <div class="body-section animate-in">
+      <div class="bs-title">การวัดร่างกาย</div>
+      <div class="body-grid">
+        <div class="body-item" *ngIf="latestReport.waist">
+          <span class="bi-label">เอว</span><span class="bi-val">{{ latestReport.waist }} cm</span>
+        </div>
+        <div class="body-item" *ngIf="latestReport.hip">
+          <span class="bi-label">สะโพก</span><span class="bi-val">{{ latestReport.hip }} cm</span>
+        </div>
+        <div class="body-item" *ngIf="latestReport.chest">
+          <span class="bi-label">หน้าอก</span><span class="bi-val">{{ latestReport.chest }} cm</span>
+        </div>
+        <div class="body-item" *ngIf="latestReport.arm">
+          <span class="bi-label">แขน</span><span class="bi-val">{{ latestReport.arm }} cm</span>
+        </div>
+      </div>
+      <div class="bs-notes" *ngIf="latestReport.notes">{{ latestReport.notes }}</div>
+    </div>
+  </ng-container>
+
+  <!-- History -->
+  <div class="history-section animate-in" *ngIf="reports.length > 1">
+    <div class="hs-title">ประวัติทั้งหมด</div>
+    <div class="history-row" *ngFor="let r of reports.slice(1)">
+      <div class="hr-date">{{ r.report_date | date:'dd/MM/yyyy' }}</div>
+      <div class="hr-stats">
+        <span *ngIf="r.weight">น้ำหนัก: {{ r.weight }} kg</span>
+        <span *ngIf="r.bmi">BMI: {{ r.bmi }}</span>
+        <span *ngIf="r.body_fat_percent">ไขมัน: {{ r.body_fat_percent }}%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="!reports.length">
+    <mat-icon>bar_chart</mat-icon>
+    <span>ยังไม่มีรายงานความก้าวหน้า</span>
+    <span class="empty-sub">เทรนเนอร์จะบันทึกข้อมูลให้คุณ</span>
+  </div>
+
+</ng-container>

@@ -1,0 +1,98 @@
+<!-- HEADER -->
+<div class="section-header animate-in">
+  <div>
+    <div class="page-title">คลาส<span>ทั้งหมด</span></div>
+    <div class="page-sub">เลือกคลาสที่ต้องการแล้วกด "จอง"</div>
+  </div>
+</div>
+
+<!-- SEARCH -->
+<div class="search-bar animate-in">
+  <mat-icon>search</mat-icon>
+  <input type="text" placeholder="ค้นหาคลาส, เทรนเนอร์..." [(ngModel)]="searchTerm" (input)="applyFilter()">
+  <span class="result-count">{{ filteredClasses.length }} คลาส</span>
+</div>
+
+<!-- LOADING -->
+<div *ngIf="loading" class="loading-wrap">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">กำลังโหลด...</div>
+</div>
+
+<!-- CLASS GRID -->
+<div class="class-grid" *ngIf="!loading">
+  <div class="class-card animate-in" *ngFor="let c of filteredClasses; let i = index" [style.animation-delay]="i*0.04+'s'">
+    <div class="cc-header">
+      <div class="cc-icon"><mat-icon>fitness_center</mat-icon></div>
+      <div class="cc-name">{{ c.name }}</div>
+    </div>
+    <div class="cc-body">
+      <div class="cc-row" *ngIf="c.trainer_name !== '-'">
+        <mat-icon>person</mat-icon>
+        <span>{{ c.trainer_name }}</span>
+      </div>
+      <div class="cc-row">
+        <mat-icon>schedule</mat-icon>
+        <span>{{ c.duration_minutes }} นาที</span>
+      </div>
+      <div class="cc-row">
+        <mat-icon>people</mat-icon>
+        <span>รับได้ {{ c.capacity }} คน</span>
+      </div>
+      <div class="cc-desc" *ngIf="c.description">{{ c.description }}</div>
+    </div>
+    <div class="cc-footer">
+      <button class="btn-book booked" *ngIf="isBooked(c.id)" disabled>
+        <mat-icon>check_circle</mat-icon>
+        จองแล้ว
+      </button>
+      <button class="btn-book" *ngIf="!isBooked(c.id)" (click)="openBooking(c)">
+        <mat-icon>event_available</mat-icon>
+        จองคลาสนี้
+      </button>
+    </div>
+  </div>
+
+  <!-- Empty -->
+  <div class="empty-state" *ngIf="!filteredClasses.length">
+    <mat-icon>search_off</mat-icon>
+    <span>ไม่พบคลาสที่ค้นหา</span>
+  </div>
+</div>
+
+<!-- BOOKING DIALOG OVERLAY -->
+<div class="dialog-overlay" *ngIf="showBookingDialog" (click)="closeDialog()"></div>
+<div class="booking-dialog" *ngIf="showBookingDialog">
+  <div class="bd-header">
+    <div class="bd-title">จองคลาส</div>
+    <button class="bd-close" (click)="closeDialog()"><mat-icon>close</mat-icon></button>
+  </div>
+  <div class="bd-body">
+    <div class="bd-class-name">{{ selectedClass?.name }}</div>
+    <div class="bd-class-info">
+      <span *ngIf="selectedClass?.trainer_name !== '-'">
+        <mat-icon>person</mat-icon> {{ selectedClass?.trainer_name }}
+      </span>
+      <span><mat-icon>schedule</mat-icon> {{ selectedClass?.duration_minutes }} นาที</span>
+      <span><mat-icon>people</mat-icon> รับ {{ selectedClass?.capacity }} คน</span>
+    </div>
+
+    <div class="bd-fields">
+      <label>
+        <span>วันที่</span>
+        <input type="date" [(ngModel)]="bookingDate" [min]="getMinDate()">
+      </label>
+      <label>
+        <span>เวลา</span>
+        <input type="time" [(ngModel)]="bookingTime" step="1800">
+      </label>
+    </div>
+  </div>
+  <div class="bd-footer">
+    <button class="btn-cancel" (click)="closeDialog()">ยกเลิก</button>
+    <button class="btn-confirm" (click)="confirmBooking()" [disabled]="bookingLoading">
+      <span *ngIf="!bookingLoading"><mat-icon>check</mat-icon> ยืนยันการจอง</span>
+      <span *ngIf="bookingLoading">กำลังจอง...</span>
+    </button>
+  </div>
+</div>

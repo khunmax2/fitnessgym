@@ -29,26 +29,27 @@ export class ProgressReportFormComponent implements OnInit {
 
     this.form = this.fb.group({
       member_id: [report?.member_id || '', Validators.required],
-      height: [report?.height || null],
-      weight: [report?.weight || null],
+      height: [report?.height || null, [Validators.min(50), Validators.max(250)]],
+      weight: [report?.weight || null, [Validators.min(10), Validators.max(300)]],
       bmi: [{ value: report?.bmi || null, disabled: true }],
-      body_fat_percent: [report?.body_fat_percent || null],
-      waist: [report?.waist || null],
-      hip: [report?.hip || null],
-      chest: [report?.chest || null],
-      arm: [report?.arm || null],
-      muscle_mass: [report?.muscle_mass || null],
+      body_fat_percent: [{ value: report?.body_fat_percent || null, disabled: true }],
+      waist: [report?.waist || null, [Validators.min(30), Validators.max(200)]],
+      hip: [report?.hip || null, [Validators.min(30), Validators.max(200)]],
+      chest: [report?.chest || null, [Validators.min(30), Validators.max(200)]],
+      arm: [report?.arm || null, [Validators.min(10), Validators.max(100)]],
+      muscle_mass: [report?.muscle_mass || null, [Validators.min(1), Validators.max(150)]],
       bmr: [{ value: report?.bmr || null, disabled: true }],
       notes: [report?.notes || ''],
       report_date: [report?.report_date ? new Date(report.report_date) : new Date(), Validators.required]
     });
 
     // Auto-calculate BMI when weight or height changes
-    this.form.get('weight')!.valueChanges.subscribe(() => { this.calcBmi(); this.calcBmr(); });
-    this.form.get('height')!.valueChanges.subscribe(() => { this.calcBmi(); this.calcBmr(); });
-    this.form.get('member_id')!.valueChanges.subscribe(() => this.calcBmr());
+    this.form.get('weight')!.valueChanges.subscribe(() => { this.calcBmi(); this.calcBmr(); this.calcBodyFat(); });
+    this.form.get('height')!.valueChanges.subscribe(() => { this.calcBmi(); this.calcBmr(); this.calcBodyFat(); });
+    this.form.get('member_id')!.valueChanges.subscribe(() => { this.calcBmr(); this.calcBodyFat(); });
     this.calcBmi();
     this.calcBmr();
+    this.calcBodyFat();
   }
 
   calcBmi(): void {
@@ -76,6 +77,21 @@ export class ProgressReportFormComponent implements OnInit {
     let bmr = (10 * w) + (6.25 * h) - (5 * age);
     bmr += member.gender === 'female' ? -161 : 5;
     this.form.get('bmr')!.setValue(Math.round(bmr));
+  }
+
+  /** Body Fat % = (1.20 × BMI) + (0.23 × Age) - (10.8 × Gender) - 5.4  (Gender: male=1, female=0) */
+  calcBodyFat(): void {
+    const bmi = this.form.get('bmi')!.value;
+    const memberId = this.form.get('member_id')!.value;
+    const member = this.members.find(m => m.id === memberId);
+    if (!bmi || !member?.date_of_birth || !member?.gender) {
+      this.form.get('body_fat_percent')!.setValue(null);
+      return;
+    }
+    const age = Math.floor((Date.now() - new Date(member.date_of_birth).getTime()) / 31557600000);
+    const genderVal = member.gender === 'male' ? 1 : 0;
+    const bf = (1.20 * bmi) + (0.23 * age) - (10.8 * genderVal) - 5.4;
+    this.form.get('body_fat_percent')!.setValue(+bf.toFixed(1));
   }
 
   onSubmit(): void {

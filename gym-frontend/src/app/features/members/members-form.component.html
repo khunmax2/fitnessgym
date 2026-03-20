@@ -97,7 +97,8 @@
       <mat-form-field appearance="outline" style="margin-bottom: 12px;">
         <mat-label>Emergency Contact</mat-label>
         <mat-icon matPrefix>emergency</mat-icon>
-        <input matInput formControlName="emergency_contact" placeholder="08x-xxx-xxxx">
+        <input matInput formControlName="emergency_contact" placeholder="0891234567" maxlength="10">
+        <mat-error>เบอร์โทรต้องเป็นตัวเลข 10 หลัก ขึ้นต้นด้วย 0</mat-error>
       </mat-form-field>
     </div>
 

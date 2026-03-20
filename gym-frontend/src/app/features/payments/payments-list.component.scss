@@ -23,7 +23,7 @@
   &.paid { background: rgba(59,130,246,.12); color: #3b82f6; }
   &.pending { background: rgba(234,179,8,.12); color: #eab308; }
 }
-.stat-info { display: flex; flex-direction: column; }
+.stat-info { display: flex; flex-direction: column; flex: 1; text-align: center; }
 .stat-value { font-family: var(--font-head); font-size: 28px; font-weight: 900; line-height: 1; }
 .stat-label { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
 

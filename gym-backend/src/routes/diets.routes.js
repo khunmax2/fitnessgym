@@ -3,9 +3,28 @@ const router = express.Router();
 const supabase = require('../config/supabase');
 const auth = require('../middleware/auth.middleware');
 const role = require('../middleware/role.middleware');
+const resolveMemberId = require('../middleware/resolve-member');
+
+// GET /my — member gets own diet plans
+router.get('/my', auth, async (req, res) => {
+  const memberId = await resolveMemberId(req);
+  if (!memberId) return res.json([]);
+  const { data, error } = await supabase
+    .from('diet_plans')
+    .select('*, trainers(name)')
+    .eq('member_id', memberId)
+    .order('created_at', { ascending: false });
+  if (error) return res.status(400).json({ error: error.message });
+  const mapped = (data || []).map(d => ({
+    ...d,
+    trainer_name: d.trainers?.name || '-',
+  }));
+  mapped.forEach(d => { delete d.trainers; });
+  res.json(mapped);
+});
 
 // GET all — admin & staff
-router.get('/', auth, async (req, res) => {
+router.get('/', auth, role('admin', 'staff'), async (req, res) => {
   const { data, error } = await supabase
     .from('diet_plans')
     .select('*, members(name), trainers(name)')
@@ -31,8 +50,8 @@ router.get('/:id', auth, async (req, res) => {
   res.json(data);
 });
 
-// POST create — admin & staff
-router.post('/', auth, async (req, res) => {
+// POST create — admin, staff & trainer
+router.post('/', auth, role('admin', 'staff', 'trainer'), async (req, res) => {
   const { data, error } = await supabase
     .from('diet_plans')
     .insert([req.body])

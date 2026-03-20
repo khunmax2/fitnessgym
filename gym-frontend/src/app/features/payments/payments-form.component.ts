@@ -47,7 +47,7 @@ export class PaymentFormComponent implements OnInit {
 
     this.form = this.fb.group({
       member_id: [payment?.member_id || '', Validators.required],
-      amount: [payment?.amount || null, [Validators.required, Validators.min(1)]],
+      amount: [payment?.amount || null, [Validators.required, Validators.min(1), Validators.max(999999)]],
       payment_date: [payment?.payment_date ? new Date(payment.payment_date) : new Date(), Validators.required],
       method: [payment?.method || 'cash'],
       status: [payment?.status || 'paid'],
@@ -59,7 +59,22 @@ export class PaymentFormComponent implements OnInit {
 
     this.onMethodChange(this.form.value.method);
 
+    // Auto-calculate due_date when payment_date changes (only for new payments)
+    if (!this.isEdit) {
+      this.autoDueDate();
+      this.form.get('payment_date')!.valueChanges.subscribe(() => this.autoDueDate());
+    }
+
     this.form.get('method')!.valueChanges.subscribe(m => this.onMethodChange(m));
+  }
+
+  autoDueDate(): void {
+    const pd = this.form.get('payment_date')!.value;
+    if (pd instanceof Date) {
+      const due = new Date(pd);
+      due.setDate(due.getDate() + 30);
+      this.form.patchValue({ due_date: due });
+    }
   }
 
   onMethodChange(method: string): void {

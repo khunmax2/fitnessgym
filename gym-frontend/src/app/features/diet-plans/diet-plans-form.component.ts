@@ -34,7 +34,7 @@ export class DietPlanFormComponent implements OnInit {
     this.form = this.fb.group({
       member_id: [diet?.member_id || '', Validators.required],
       trainer_id: [diet?.trainer_id || ''],
-      calories: [diet?.calories || null],
+      calories: [diet?.calories || null, [Validators.min(100), Validators.max(10000)]],
       breakfast: [meals.breakfast || ''],
       lunch: [meals.lunch || ''],
       dinner: [meals.dinner || ''],

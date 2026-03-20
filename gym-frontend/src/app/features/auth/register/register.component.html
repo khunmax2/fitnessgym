@@ -45,16 +45,22 @@
             <mat-icon>alternate_email</mat-icon>
             <input formControlName="email" type="email" placeholder="email@example.com">
           </div>
-          <div class="field-error" *ngIf="form.get('email')?.invalid && form.get('email')?.touched">
-            กรุณากรอก email ให้ถูกต้อง
+          <div class="field-error" *ngIf="form.get('email')?.hasError('required') && form.get('email')?.touched">
+            กรุณากรอก email
+          </div>
+          <div class="field-error" *ngIf="(form.get('email')?.hasError('email') || form.get('email')?.hasError('pattern')) && !form.get('email')?.hasError('required') && form.get('email')?.touched">
+            รูปแบบ email ไม่ถูกต้อง เช่น example&#64;gmail.com
           </div>
         </div>
 
         <div class="field-wrap">
           <div class="field-label">Phone <span class="optional">(optional)</span></div>
-          <div class="field-input">
+          <div class="field-input" [class.err]="form.get('phone')?.invalid && form.get('phone')?.touched">
             <mat-icon>phone</mat-icon>
-            <input formControlName="phone" placeholder="08x-xxx-xxxx">
+            <input formControlName="phone" placeholder="08xxxxxxxx" maxlength="10">
+          </div>
+          <div class="field-error" *ngIf="form.get('phone')?.hasError('pattern') && form.get('phone')?.touched">
+            เบอร์โทรต้องเป็นตัวเลข 10 หลัก ขึ้นต้นด้วย 0 ไม่ต้องใส่ขีด เช่น 08xxxxxxxx
           </div>
         </div>
 

@@ -25,12 +25,20 @@
       <mat-error>Member is required</mat-error>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full-width" style="margin-bottom: 12px;">
-      <mat-label>Scheduled Date & Time</mat-label>
-      <mat-icon matPrefix>schedule</mat-icon>
-      <input matInput type="datetime-local" formControlName="scheduled_at">
-      <mat-error>Date & time is required</mat-error>
-    </mat-form-field>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+      <mat-form-field appearance="outline">
+        <mat-label>Date</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="schedule_date">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error>Date is required</mat-error>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Time</mat-label>
+        <input matInput type="time" formControlName="schedule_time">
+        <mat-error>Time is required</mat-error>
+      </mat-form-field>
+    </div>
 
     <mat-form-field appearance="outline" class="full-width" style="margin-bottom: 12px;">
       <mat-label>Status</mat-label>

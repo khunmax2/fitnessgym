@@ -30,7 +30,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>เบอร์โทรศัพท์</mat-label>
           <mat-icon matPrefix>phone</mat-icon>
-          <input matInput formControlName="phone">
+          <input matInput formControlName="phone" maxlength="10" placeholder="0891234567">
+          <mat-error>เบอร์โทรต้องเป็นตัวเลข 10 หลัก ขึ้นต้นด้วย 0</mat-error>
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="full-width">
@@ -79,9 +80,9 @@ export class EditUserDialogComponent implements OnInit {
   ngOnInit(): void {
     const u = this.data.user;
     this.form = this.fb.group({
-      name: [u.name || '', Validators.required],
-      email: [u.email || '', [Validators.required, Validators.email]],
-      phone: [u.phone || ''],
+      name: [u.name || '', [Validators.required, Validators.minLength(2)]],
+      email: [u.email || '', [Validators.required, Validators.email, Validators.pattern(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)]],
+      phone: [u.phone || '', [Validators.pattern(/^0[0-9]{9}$/)]],
       date_of_birth: [u.date_of_birth ? new Date(u.date_of_birth) : null],
       gender: [u.gender || null]
     });

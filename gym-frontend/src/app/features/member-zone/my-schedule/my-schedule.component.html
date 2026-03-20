@@ -1,0 +1,56 @@
+<div class="section-header animate-in">
+  <div>
+    <div class="page-title">ตาราง<span>เรียนของฉัน</span></div>
+    <div class="page-sub">ดูและจัดการการจองคลาสของคุณ</div>
+  </div>
+  <a routerLink="/dashboard/member-home/classes" class="btn-primary">
+    <mat-icon>add</mat-icon> จองคลาสใหม่
+  </a>
+</div>
+
+<!-- FILTER TABS -->
+<div class="filter-tabs animate-in">
+  <button [class.active]="filter==='upcoming'" (click)="filter='upcoming'">ที่กำลังจะมาถึง</button>
+  <button [class.active]="filter==='all'" (click)="filter='all'">ทั้งหมด</button>
+  <button [class.active]="filter==='past'" (click)="filter='past'">ที่ผ่านมา</button>
+  <button [class.active]="filter==='cancelled'" (click)="filter='cancelled'">ยกเลิกแล้ว</button>
+</div>
+
+<!-- LOADING -->
+<div *ngIf="loading" class="loading-wrap">
+  <div class="loading-spinner"></div>
+</div>
+
+<!-- SCHEDULE LIST -->
+<div *ngIf="!loading">
+  <div class="schedule-card animate-in" *ngFor="let s of filtered; let i=index" [style.animation-delay]="i*0.04+'s'">
+    <div class="sc-date">
+      <div class="sc-day">{{ s.scheduled_at | date:'EEE' }}</div>
+      <div class="sc-num">{{ s.scheduled_at | date:'d' }}</div>
+      <div class="sc-month">{{ s.scheduled_at | date:'MMM' }}</div>
+    </div>
+    <div class="sc-body">
+      <div class="sc-class">{{ s.class_name }}</div>
+      <div class="sc-time"><mat-icon>access_time</mat-icon>{{ s.scheduled_at | date:'HH:mm' }} น.</div>
+      <div class="sc-meta">
+        <span *ngIf="s.duration_minutes"><mat-icon>schedule</mat-icon>{{ s.duration_minutes }} นาที</span>
+        <span *ngIf="s.trainer_name && s.trainer_name !== '-'"><mat-icon>person</mat-icon>{{ s.trainer_name }}</span>
+      </div>
+      <div class="sc-desc" *ngIf="s.description">{{ s.description }}</div>
+    </div>
+    <div class="sc-right">
+      <div class="sc-status" [class]="s.status">
+        {{ s.status === 'booked' ? 'จอง' : s.status === 'cancelled' ? 'ยกเลิก' : 'เสร็จสิ้น' }}
+      </div>
+      <button class="btn-cancel" *ngIf="isUpcoming(s)" (click)="cancel(s)">
+        <mat-icon>event_busy</mat-icon> ยกเลิก
+      </button>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="!filtered.length">
+    <mat-icon>event_busy</mat-icon>
+    <span>ไม่มีการจองในหมวดนี้</span>
+    <a routerLink="/dashboard/member-home/classes" class="btn-link">จองคลาสเลย</a>
+  </div>
+</div>

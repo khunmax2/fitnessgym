@@ -1,0 +1,141 @@
+<div *ngIf="loading" class="loading-wrap">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Loading...</div>
+</div>
+
+<ng-container *ngIf="!loading">
+
+<!-- WELCOME -->
+<div class="welcome-row animate-in">
+  <div>
+    <div class="page-title">สวัสดี, <span>{{ userName }}</span> 👋</div>
+    <div class="page-sub">ยินดีต้อนรับสู่ระบบสมาชิก Fitness & Gym</div>
+  </div>
+  <div class="date-badge">
+    <mat-icon>calendar_today</mat-icon>
+    {{ today | date:'EEEE, d MMMM yyyy' }}
+  </div>
+</div>
+
+<!-- MEMBERSHIP CARD -->
+<div class="membership-card animate-in" [style.border-color]="statusColor">
+  <div class="mc-left">
+    <div class="mc-icon" [style.background]="statusColor + '20'" [style.color]="statusColor">
+      <mat-icon>card_membership</mat-icon>
+    </div>
+    <div class="mc-info">
+      <div class="mc-title">สมาชิกภาพ · {{ getMembershipTypeLabel(member?.membership_type) }}</div>
+      <div class="mc-name">{{ member?.name }}</div>
+      <div class="mc-dates">
+        <span>เริ่ม: {{ member?.start_date | date:'dd/MM/yyyy' }}</span>
+        <span class="sep">•</span>
+        <span>หมดอายุ: {{ member?.end_date | date:'dd/MM/yyyy' }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="mc-right">
+    <div class="mc-days" [style.color]="statusColor">
+      <span class="days-num">{{ membershipExpired ? '0' : daysLeft }}</span>
+      <span class="days-lbl">วัน</span>
+    </div>
+    <div class="mc-status" [style.color]="statusColor" [style.background]="statusColor + '20'">
+      {{ membershipExpired ? 'หมดอายุแล้ว' : (daysLeft <= 7 ? 'ใกล้หมดอายุ' : 'Active') }}
+    </div>
+  </div>
+</div>
+
+<!-- QUICK STATS -->
+<div class="quick-stats animate-in">
+  <div class="qs-card">
+    <mat-icon>calendar_month</mat-icon>
+    <div class="qs-num">{{ upcomingSchedules.length }}</div>
+    <div class="qs-lbl">คลาสที่จองไว้</div>
+  </div>
+  <div class="qs-card">
+    <mat-icon>payments</mat-icon>
+    <div class="qs-num">{{ recentPayments.length }}</div>
+    <div class="qs-lbl">รายการชำระเงิน</div>
+  </div>
+  <div class="qs-card">
+    <mat-icon>bar_chart</mat-icon>
+    <div class="qs-num">{{ recentProgress.length }}</div>
+    <div class="qs-lbl">รายงานความก้าวหน้า</div>
+  </div>
+  <div class="qs-card">
+    <mat-icon>restaurant_menu</mat-icon>
+    <div class="qs-num">{{ myDietPlans.length }}</div>
+    <div class="qs-lbl">แผนอาหาร</div>
+  </div>
+</div>
+
+<!-- BOTTOM GRID -->
+<div class="bottom-grid">
+
+  <!-- Upcoming Schedules -->
+  <mat-card class="info-card animate-in">
+    <div class="card-head">
+      <div class="card-title">คลาสที่จอง <span>ที่กำลังจะมาถึง</span></div>
+      <a routerLink="/dashboard/my-schedule" class="see-all">ดูทั้งหมด <mat-icon>arrow_forward</mat-icon></a>
+    </div>
+    <div class="schedule-list">
+      <div class="schedule-item" *ngFor="let s of upcomingSchedules">
+        <div class="si-icon"><mat-icon>fitness_center</mat-icon></div>
+        <div class="si-body">
+          <div class="si-class">{{ s.class_name }}</div>
+          <div class="si-time">{{ s.scheduled_at | date:'EEE d MMM, HH:mm' }}</div>
+          <div class="si-trainer" *ngIf="s.trainer_name !== '-'">Trainer: {{ s.trainer_name }}</div>
+        </div>
+        <div class="si-status booked">จอง</div>
+      </div>
+      <div class="empty-state" *ngIf="!upcomingSchedules.length">
+        <mat-icon>event_busy</mat-icon>
+        <span>ยังไม่มีคลาสที่จอง</span>
+        <a routerLink="/dashboard/member-home/classes" class="btn-action">จองคลาสเลย</a>
+      </div>
+    </div>
+  </mat-card>
+
+  <!-- Recent Payments -->
+  <mat-card class="info-card animate-in" style="animation-delay:.1s">
+    <div class="card-head">
+      <div class="card-title">การชำระเงิน <span>ล่าสุด</span></div>
+      <a routerLink="/dashboard/my-payments" class="see-all">ดูทั้งหมด <mat-icon>arrow_forward</mat-icon></a>
+    </div>
+    <div class="payment-list">
+      <div class="payment-item" *ngFor="let p of recentPayments">
+        <div class="pi-icon"><mat-icon>receipt_long</mat-icon></div>
+        <div class="pi-body">
+          <div class="pi-amount">฿ {{ p.amount | number:'1.0-0' }}</div>
+          <div class="pi-date">{{ p.payment_date | date:'dd/MM/yyyy' }}</div>
+          <div class="pi-method">{{ p.method }}</div>
+        </div>
+        <div class="pi-status" [class]="p.status">{{ getPaymentStatusLabel(p.status) }}</div>
+      </div>
+      <div class="empty-state" *ngIf="!recentPayments.length">
+        <mat-icon>receipt</mat-icon>
+        <span>ไม่มีประวัติการชำระเงิน</span>
+      </div>
+    </div>
+  </mat-card>
+
+  <!-- Diet Plans -->
+  <mat-card class="info-card animate-in" style="animation-delay:.15s" *ngIf="myDietPlans.length">
+    <div class="card-head">
+      <div class="card-title">แผนอาหาร <span>ของฉัน</span></div>
+      <a routerLink="/dashboard/my-diet" class="see-all">ดูทั้งหมด <mat-icon>arrow_forward</mat-icon></a>
+    </div>
+    <div class="diet-list">
+      <div class="diet-item" *ngFor="let d of myDietPlans">
+        <div class="di-cal">{{ d.calories || '-' }} <span>kcal</span></div>
+        <div class="di-body">
+          <div class="di-dates">{{ d.start_date | date:'dd/MM/yyyy' }} – {{ d.end_date | date:'dd/MM/yyyy' }}</div>
+          <div class="di-trainer" *ngIf="d.trainer_name !== '-'">โดย: {{ d.trainer_name }}</div>
+          <div class="di-notes" *ngIf="d.notes">{{ d.notes }}</div>
+        </div>
+      </div>
+    </div>
+  </mat-card>
+
+</div>
+
+</ng-container>

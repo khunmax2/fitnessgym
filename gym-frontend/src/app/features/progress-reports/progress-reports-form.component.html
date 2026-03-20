@@ -13,11 +13,13 @@
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
       <mat-form-field appearance="outline">
         <mat-label>Height (cm)</mat-label>
-        <input matInput type="number" formControlName="height" placeholder="e.g. 170">
+        <input matInput type="number" formControlName="height" placeholder="e.g. 170" min="50" max="250">
+        <mat-error>50 - 250 cm</mat-error>
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>Weight (kg)</mat-label>
-        <input matInput type="number" formControlName="weight" placeholder="e.g. 75.5">
+        <input matInput type="number" formControlName="weight" placeholder="e.g. 75.5" min="10" max="300">
+        <mat-error>10 - 300 kg</mat-error>
       </mat-form-field>
     </div>
 
@@ -28,37 +30,43 @@
         <mat-hint *ngIf="form.get('bmi')?.value">{{ form.get('bmi')?.value < 18.5 ? 'ผอม' : form.get('bmi')?.value < 25 ? 'ปกติ' : form.get('bmi')?.value < 30 ? 'น้ำหนักเกิน' : 'อ้วน' }}</mat-hint>
       </mat-form-field>
       <mat-form-field appearance="outline">
-        <mat-label>Body Fat %</mat-label>
-        <input matInput type="number" formControlName="body_fat_percent" placeholder="e.g. 18.0">
+        <mat-label>Body Fat % (auto)</mat-label>
+        <input matInput type="number" formControlName="body_fat_percent" placeholder="คำนวณอัตโนมัติ">
+        <mat-hint>สูตร: (1.20×BMI)+(0.23×อายุ)−(10.8×เพศ)−5.4</mat-hint>
       </mat-form-field>
     </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
       <mat-form-field appearance="outline">
         <mat-label>Waist / รอบเอว (cm)</mat-label>
-        <input matInput type="number" formControlName="waist" placeholder="e.g. 80">
+        <input matInput type="number" formControlName="waist" placeholder="e.g. 80" min="30" max="200">
+        <mat-error>30 - 200 cm</mat-error>
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>Hip / รอบสะโพก (cm)</mat-label>
-        <input matInput type="number" formControlName="hip" placeholder="e.g. 95">
+        <input matInput type="number" formControlName="hip" placeholder="e.g. 95" min="30" max="200">
+        <mat-error>30 - 200 cm</mat-error>
       </mat-form-field>
     </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
       <mat-form-field appearance="outline">
         <mat-label>Chest / รอบอก (cm)</mat-label>
-        <input matInput type="number" formControlName="chest" placeholder="e.g. 100">
+        <input matInput type="number" formControlName="chest" placeholder="e.g. 100" min="30" max="200">
+        <mat-error>30 - 200 cm</mat-error>
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>Arm / รอบแขน (cm)</mat-label>
-        <input matInput type="number" formControlName="arm" placeholder="e.g. 35">
+        <input matInput type="number" formControlName="arm" placeholder="e.g. 35" min="10" max="100">
+        <mat-error>10 - 100 cm</mat-error>
       </mat-form-field>
     </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
       <mat-form-field appearance="outline">
         <mat-label>Muscle Mass (kg)</mat-label>
-        <input matInput type="number" formControlName="muscle_mass" placeholder="e.g. 30">
+        <input matInput type="number" formControlName="muscle_mass" placeholder="e.g. 30" min="1" max="150">
+        <mat-error>1 - 150 kg</mat-error>
       </mat-form-field>
       <mat-form-field appearance="outline">
         <mat-label>BMR (auto, kcal/day)</mat-label>

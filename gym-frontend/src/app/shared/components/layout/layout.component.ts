@@ -37,16 +37,24 @@ export class LayoutComponent implements OnInit {
   currentLabel = 'Overview';
 
   allNavItems: NavItem[] = [
-    { path: '/dashboard/overview',         icon: 'dashboard',         label: 'Overview' },
-    { path: '/dashboard/members',          icon: 'people',            label: 'Members', roles: [UserRole.Admin, UserRole.Staff] },
-    { path: '/dashboard/trainers',         icon: 'fitness_center',    label: 'Trainers', roles: [UserRole.Admin, UserRole.Staff] },
-    { path: '/dashboard/classes',          icon: 'directions_run',    label: 'Classes', roles: [UserRole.Admin, UserRole.Staff, UserRole.Trainer] },
-    { path: '/dashboard/equipment',        icon: 'sports_gymnastics', label: 'Equipment', roles: [UserRole.Admin, UserRole.Staff] },
-    { path: '/dashboard/schedules',        icon: 'calendar_month',    label: 'Schedules', roles: [UserRole.Admin, UserRole.Staff, UserRole.Trainer, UserRole.Member] },
-    { path: '/dashboard/payments',         icon: 'payments',          label: 'Payments', roles: [UserRole.Admin, UserRole.Staff] },
-    { path: '/dashboard/diet-plans',       icon: 'restaurant_menu',   label: 'Diet Plans', roles: [UserRole.Admin, UserRole.Trainer] },
-    { path: '/dashboard/progress-reports', icon: 'bar_chart',         label: 'Progress', roles: [UserRole.Admin, UserRole.Trainer, UserRole.Member] },
-    { path: '/dashboard/users',            icon: 'manage_accounts',   label: 'Users', roles: [UserRole.Admin] },
+    // ── Admin / Staff / Trainer ─────────────────────────────────
+    { path: '/dashboard/overview',         icon: 'dashboard',         label: 'Overview',      roles: [UserRole.Admin, UserRole.Staff, UserRole.Trainer] },
+    { path: '/dashboard/members',          icon: 'people',            label: 'Members',       roles: [UserRole.Admin, UserRole.Staff] },
+    { path: '/dashboard/trainers',         icon: 'fitness_center',    label: 'Trainers',      roles: [UserRole.Admin, UserRole.Staff] },
+    { path: '/dashboard/classes',          icon: 'directions_run',    label: 'Classes',       roles: [UserRole.Admin, UserRole.Staff, UserRole.Trainer] },
+    { path: '/dashboard/equipment',        icon: 'sports_gymnastics', label: 'Equipment',     roles: [UserRole.Admin, UserRole.Staff] },
+    { path: '/dashboard/schedules',        icon: 'calendar_month',    label: 'Schedules',     roles: [UserRole.Admin, UserRole.Staff, UserRole.Trainer] },
+    { path: '/dashboard/payments',         icon: 'payments',          label: 'Payments',      roles: [UserRole.Admin, UserRole.Staff] },
+    { path: '/dashboard/diet-plans',       icon: 'restaurant_menu',   label: 'Diet Plans',    roles: [UserRole.Admin, UserRole.Trainer] },
+    { path: '/dashboard/progress-reports', icon: 'bar_chart',         label: 'Progress',      roles: [UserRole.Admin, UserRole.Trainer] },
+    { path: '/dashboard/users',            icon: 'manage_accounts',   label: 'Users',         roles: [UserRole.Admin] },
+    // ── Member zone ─────────────────────────────────────────────
+    { path: '/dashboard/member-home',              icon: 'home',              label: 'หน้าแรก',        roles: [UserRole.Member] },
+    { path: '/dashboard/member-home/classes',      icon: 'directions_run',    label: 'คลาสทั้งหมด',    roles: [UserRole.Member] },
+    { path: '/dashboard/member-home/schedule',     icon: 'calendar_month',    label: 'ตารางของฉัน',    roles: [UserRole.Member] },
+    { path: '/dashboard/member-home/progress',     icon: 'bar_chart',         label: 'ความก้าวหน้า',   roles: [UserRole.Member] },
+    { path: '/dashboard/member-home/diet',         icon: 'restaurant_menu',   label: 'แผนอาหาร',       roles: [UserRole.Member] },
+    { path: '/dashboard/member-home/payments',     icon: 'payments',          label: 'การชำระเงิน',    roles: [UserRole.Member] },
   ];
 
   get navItems(): NavItem[] {
@@ -69,7 +77,7 @@ export class LayoutComponent implements OnInit {
     private router: Router
   ) {
     this.router.events.pipe(filter(e => e instanceof NavigationEnd)).subscribe((e: any) => {
-      const found = this.allNavItems.find(n => e.url.startsWith(n.path));
+      const found = this.allNavItems.find(n => e.url === n.path || e.url.startsWith(n.path + '/') || e.url.startsWith(n.path + '?'));
       this.currentLabel = found ? found.label : 'Dashboard';
       this.showNotifications = false;
     });

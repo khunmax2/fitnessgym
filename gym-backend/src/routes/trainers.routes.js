@@ -25,8 +25,8 @@ router.get('/:id', auth, async (req, res) => {
   res.json(data);
 });
 
-// POST create — admin & staff
-router.post('/', auth, async (req, res) => {
+// POST create — admin only
+router.post('/', auth, role('admin'), async (req, res) => {
   const { data, error } = await supabase
     .from('trainers')
     .insert([req.body])

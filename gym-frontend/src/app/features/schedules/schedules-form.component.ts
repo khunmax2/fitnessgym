@@ -29,13 +29,15 @@ export class ScheduleFormComponent implements OnInit {
     this.members = this.data?.members || [];
     this.isEdit = !!schedule;
 
-    const now = new Date();
-    const defaultDateTime = now.toISOString().slice(0, 16);
+    const dt = schedule?.scheduled_at ? new Date(schedule.scheduled_at) : new Date();
+    const pad = (n: number) => n.toString().padStart(2, '0');
+    const timeStr = `${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
 
     this.form = this.fb.group({
       class_id:     [schedule?.class_id || '', Validators.required],
       member_id:    [schedule?.member_id || '', Validators.required],
-      scheduled_at: [schedule?.scheduled_at?.slice(0, 16) || defaultDateTime, Validators.required],
+      schedule_date: [dt, Validators.required],
+      schedule_time: [timeStr, Validators.required],
       status:       [schedule?.status || 'booked']
     });
   }
@@ -43,7 +45,16 @@ export class ScheduleFormComponent implements OnInit {
   onSubmit(): void {
     if (this.form.invalid) return;
     this.loading = true;
-    const payload = { ...this.form.value };
+    const val = this.form.value;
+    const d = new Date(val.schedule_date);
+    const [hh, mm] = val.schedule_time.split(':');
+    d.setHours(+hh, +mm, 0, 0);
+    const payload = {
+      class_id: val.class_id,
+      member_id: val.member_id,
+      scheduled_at: d.toISOString(),
+      status: val.status
+    };
     const action = this.isEdit
       ? this.service.update(this.data.schedule.id, payload)
       : this.service.create(payload);

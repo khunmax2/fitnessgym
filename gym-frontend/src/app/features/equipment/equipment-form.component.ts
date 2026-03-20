@@ -26,7 +26,7 @@ export class EquipmentFormComponent implements OnInit {
     const today = new Date().toISOString().split('T')[0];
     this.form = this.fb.group({
       name:             [this.data?.name || '', Validators.required],
-      quantity:         [this.data?.quantity ?? 1, [Validators.required, Validators.min(0)]],
+      quantity:         [this.data?.quantity ?? 1, [Validators.required, Validators.min(0), Validators.max(9999)]],
       status:           [this.data?.status || 'available'],
       last_maintenance: [this.data?.last_maintenance?.slice(0, 10) || today],
       notes:            [this.data?.notes || '']

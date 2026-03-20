@@ -30,8 +30,8 @@ export class ClassFormComponent implements OnInit {
     this.form = this.fb.group({
       name:             [cls?.name || '', Validators.required],
       trainer_id:       [cls?.trainer_id || ''],
-      capacity:         [cls?.capacity ?? 10, [Validators.required, Validators.min(1)]],
-      duration_minutes: [cls?.duration_minutes ?? 60, [Validators.required, Validators.min(1)]],
+      capacity:         [cls?.capacity ?? 10, [Validators.required, Validators.min(1), Validators.max(200)]],
+      duration_minutes: [cls?.duration_minutes ?? 60, [Validators.required, Validators.min(1), Validators.max(480)]],
       description:      [cls?.description || '']
     });
   }

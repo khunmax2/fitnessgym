@@ -1,0 +1,51 @@
+<div class="section-header animate-in">
+  <div>
+    <div class="page-title">แผน<span>อาหาร</span></div>
+    <div class="page-sub">แผนอาหารที่เทรนเนอร์วางไว้ให้คุณ</div>
+  </div>
+</div>
+
+<div *ngIf="loading" class="loading-wrap"><div class="loading-spinner"></div></div>
+
+<ng-container *ngIf="!loading">
+  <div class="diet-card animate-in" *ngFor="let d of dietPlans; let i=index"
+       [style.animation-delay]="i*0.06+'s'" [class.active]="isActive(d)">
+    <div class="dc-header">
+      <div class="dc-left">
+        <div class="dc-status" *ngIf="isActive(d)">กำลังใช้อยู่</div>
+        <div class="dc-calories">
+          <span class="cal-num">{{ d.calories || '-' }}</span>
+          <span class="cal-unit">kcal / วัน</span>
+        </div>
+        <div class="dc-dates">
+          <mat-icon>date_range</mat-icon>
+          {{ d.start_date | date:'dd/MM/yyyy' }} – {{ d.end_date | date:'dd/MM/yyyy' }}
+        </div>
+        <div class="dc-trainer" *ngIf="d.trainer_name !== '-'">
+          <mat-icon>person</mat-icon> {{ d.trainer_name }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Notes -->
+    <div class="dc-notes" *ngIf="d.notes">
+      <mat-icon>notes</mat-icon>
+      <span>{{ d.notes }}</span>
+    </div>
+
+    <!-- Meals -->
+    <div class="dc-meals" *ngIf="getMeals(d.meals).length">
+      <div class="meals-title">รายการอาหาร</div>
+      <div class="meal-row" *ngFor="let m of getMeals(d.meals)">
+        <div class="meal-name"><mat-icon>restaurant</mat-icon>{{ m.name }}</div>
+        <div class="meal-detail">{{ m.details }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="!dietPlans.length">
+    <mat-icon>restaurant_menu</mat-icon>
+    <span>ยังไม่มีแผนอาหาร</span>
+    <span class="empty-sub">เทรนเนอร์จะวางแผนอาหารให้คุณ</span>
+  </div>
+</ng-container>

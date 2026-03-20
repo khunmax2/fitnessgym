@@ -38,10 +38,14 @@ const PERMISSIONS: Record<Role, string[]> = {
     'notifications:read',
   ],
   member: [
+    'profile:read',
+    'member-home:view',
     'schedules:read',
+    'bookings:create',
     'classes:read',
     'progress:read',
     'diets:read',
+    'payments:read',
     'notifications:read',
   ],
 };

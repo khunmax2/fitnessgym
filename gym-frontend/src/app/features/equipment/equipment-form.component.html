@@ -15,8 +15,8 @@
     <mat-form-field appearance="outline" class="full-width" style="margin-bottom: 12px;">
       <mat-label>Quantity</mat-label>
       <mat-icon matPrefix>inventory_2</mat-icon>
-      <input matInput type="number" formControlName="quantity" min="0">
-      <mat-error>Quantity is required (min 0)</mat-error>
+      <input matInput type="number" formControlName="quantity" min="0" max="9999">
+      <mat-error>จำนวนต้องอยู่ระหว่าง 0 - 9999</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width" style="margin-bottom: 12px;">

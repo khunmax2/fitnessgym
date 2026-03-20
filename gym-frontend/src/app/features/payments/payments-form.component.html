@@ -58,16 +58,17 @@
       <span>เมื่อกด Create ระบบจะสร้าง QR Code สำหรับสแกนจ่ายเงินอัตโนมัติ</span>
     </div>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Transaction Ref (เลขอ้างอิง)</mat-label>
-      <input matInput formControlName="transaction_ref" placeholder="เลขอ้างอิงธุรกรรม...">
-    </mat-form-field>
+    <div *ngIf="isEdit && data?.payment?.transaction_ref" class="invoice-display">
+      <mat-icon>tag</mat-icon>
+      <span>Transaction Ref: {{ data.payment.transaction_ref }}</span>
+    </div>
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Due Date (วันครบกำหนด)</mat-label>
-      <input matInput [matDatepicker]="duePicker" formControlName="due_date" placeholder="เลือกวันครบกำหนด">
+      <input matInput [matDatepicker]="duePicker" formControlName="due_date" placeholder="อัตโนมัติ +30 วัน">
       <mat-datepicker-toggle matSuffix [for]="duePicker"></mat-datepicker-toggle>
       <mat-datepicker #duePicker></mat-datepicker>
+      <mat-hint>คำนวณจากวันชำระ +30 วัน (แก้ไขได้)</mat-hint>
     </mat-form-field>
 
     <div *ngIf="isEdit && data?.payment?.invoice_number" class="invoice-display">

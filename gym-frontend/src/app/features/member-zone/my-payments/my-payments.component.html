@@ -1,0 +1,63 @@
+<div class="section-header animate-in">
+  <div>
+    <div class="page-title">การ<span>ชำระเงิน</span></div>
+    <div class="page-sub">ประวัติการชำระเงินทั้งหมดของคุณ</div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="pay-stats animate-in">
+  <div class="ps-card">
+    <mat-icon>payments</mat-icon>
+    <div class="ps-num">{{ payments.length }}</div>
+    <div class="ps-lbl">รายการทั้งหมด</div>
+  </div>
+  <div class="ps-card featured">
+    <mat-icon>account_balance_wallet</mat-icon>
+    <div class="ps-num">฿ {{ totalPaid | number:'1.0-0' }}</div>
+    <div class="ps-lbl">ยอดชำระรวม</div>
+  </div>
+  <div class="ps-card" *ngIf="pendingCount > 0">
+    <mat-icon>pending_actions</mat-icon>
+    <div class="ps-num warn">{{ pendingCount }}</div>
+    <div class="ps-lbl warn">รอชำระ</div>
+  </div>
+</div>
+
+<div *ngIf="loading" class="loading-wrap"><div class="loading-spinner"></div></div>
+
+<div *ngIf="!loading">
+  <div class="pay-card animate-in" *ngFor="let p of payments; let i=index" [style.animation-delay]="i*0.04+'s'">
+    <div class="pc-left">
+      <div class="pc-amount">฿ {{ p.amount | number:'1.0-0' }}</div>
+      <div class="pc-type">{{ getTypeLabel(p.payment_type) }}</div>
+    </div>
+    <div class="pc-body">
+      <div class="pc-row">
+        <mat-icon>calendar_today</mat-icon>
+        <span><strong>วันที่ชำระ:</strong> {{ p.payment_date | date:'dd MMMM yyyy' }}</span>
+      </div>
+      <div class="pc-row">
+        <mat-icon>credit_card</mat-icon>
+        <span><strong>ช่องทาง:</strong> {{ getMethodLabel(p.method) }}</span>
+      </div>
+      <div class="pc-row" *ngIf="p.invoice_number">
+        <mat-icon>receipt</mat-icon>
+        <span><strong>เลขที่ใบเสร็จ:</strong> {{ p.invoice_number }}</span>
+      </div>
+      <div class="pc-row" *ngIf="p.due_date">
+        <mat-icon>event</mat-icon>
+        <span><strong>กำหนดชำระ:</strong> {{ p.due_date | date:'dd MMMM yyyy' }}</span>
+      </div>
+      <div class="pc-notes" *ngIf="p.notes"><strong>หมายเหตุ:</strong> {{ p.notes }}</div>
+    </div>
+    <div class="pc-right">
+      <div class="pc-status" [class]="p.status">{{ getStatusLabel(p.status) }}</div>
+    </div>
+  </div>
+
+  <div class="empty-state" *ngIf="!payments.length">
+    <mat-icon>receipt_long</mat-icon>
+    <span>ยังไม่มีประวัติการชำระเงิน</span>
+  </div>
+</div>

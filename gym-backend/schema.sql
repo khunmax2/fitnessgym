@@ -10,8 +10,11 @@ CREATE TABLE IF NOT EXISTS users (
   email VARCHAR(150) UNIQUE NOT NULL,
   password TEXT NOT NULL,
   phone VARCHAR(20),
-  role VARCHAR(20) DEFAULT 'staff',
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  role VARCHAR(20) DEFAULT 'member',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  date_of_birth DATE,
+  gender VARCHAR(10),
+  CONSTRAINT users_role_check CHECK (role IN ('member', 'trainer', 'staff', 'admin'))
 );
 
 -- Members
@@ -20,16 +23,17 @@ CREATE TABLE IF NOT EXISTS members (
   name VARCHAR(100) NOT NULL,
   email VARCHAR(150) UNIQUE NOT NULL,
   phone VARCHAR(20),
+  membership_type VARCHAR(50) DEFAULT 'monthly',
+  start_date DATE NOT NULL,
+  end_date DATE NOT NULL,
+  status VARCHAR(20) DEFAULT 'active',
+  created_at TIMESTAMPTZ DEFAULT NOW(),
   date_of_birth DATE,
   gender VARCHAR(10),
   emergency_contact VARCHAR(20),
   emergency_name VARCHAR(100),
   medical_conditions TEXT,
-  membership_type VARCHAR(50) DEFAULT 'monthly',
-  start_date DATE NOT NULL,
-  end_date DATE NOT NULL,
-  status VARCHAR(20) DEFAULT 'active',
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  CONSTRAINT fk_members_user FOREIGN KEY (id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- Trainers
@@ -41,7 +45,8 @@ CREATE TABLE IF NOT EXISTS trainers (
   specialty VARCHAR(100),
   bio TEXT,
   status VARCHAR(20) DEFAULT 'active',
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  CONSTRAINT fk_trainers_user FOREIGN KEY (id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- Classes
@@ -85,7 +90,18 @@ CREATE TABLE IF NOT EXISTS payments (
   method VARCHAR(50) DEFAULT 'cash',
   status VARCHAR(20) DEFAULT 'paid',
   notes TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  payment_type VARCHAR(50) DEFAULT 'membership_fee',
+  transaction_ref VARCHAR(100),
+  invoice_number VARCHAR(50),
+  due_date DATE,
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  is_deleted BOOLEAN DEFAULT false,
+  deleted_at TIMESTAMPTZ,
+  refund_reason TEXT,
+  refunded_at TIMESTAMPTZ,
+  created_by UUID REFERENCES users(id) ON DELETE SET NULL,
+  updated_by UUID REFERENCES users(id) ON DELETE SET NULL
 );
 
 -- Diet Plans
@@ -105,41 +121,28 @@ CREATE TABLE IF NOT EXISTS diet_plans (
 CREATE TABLE IF NOT EXISTS progress_reports (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   member_id UUID REFERENCES members(id) ON DELETE CASCADE,
-  height NUMERIC,
   weight DECIMAL(5,2),
   bmi DECIMAL(4,2),
   body_fat_percent DECIMAL(4,2),
+  notes TEXT,
+  report_date DATE NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  height NUMERIC,
   waist NUMERIC,
   hip NUMERIC,
   chest NUMERIC,
   arm NUMERIC,
   muscle_mass NUMERIC,
-  bmr NUMERIC,
-  notes TEXT,
-  report_date DATE NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  bmr NUMERIC
 );
 
--- ============================================
--- Sample Data
--- ============================================
-INSERT INTO trainers (name, email, phone, specialty) VALUES
-  ('สมชาย มีสุข', 'somchai@gym.com', '081-111-1111', 'Weight Training'),
-  ('วิภา ดีใจ', 'wipa@gym.com', '082-222-2222', 'Yoga & Cardio');
-
-INSERT INTO members (name, email, phone, membership_type, start_date, end_date) VALUES
-  ('อนันต์ สุขดี', 'anant@email.com', '083-333-3333', 'monthly', NOW(), NOW() + INTERVAL '30 days'),
-  ('มะลิ งามจริง', 'mali@email.com', '084-444-4444', 'yearly',  NOW(), NOW() + INTERVAL '365 days');
-
--- ============================================
 -- Notifications
--- ============================================
 CREATE TABLE IF NOT EXISTS notifications (
   id         UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id    UUID REFERENCES users(id) ON DELETE CASCADE,
   title      VARCHAR(200) NOT NULL,
   message    TEXT NOT NULL,
-  type       VARCHAR(30) DEFAULT 'info',  -- info | warning | success | error
+  type       VARCHAR(30) DEFAULT 'info',
   is_read    BOOLEAN DEFAULT false,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );

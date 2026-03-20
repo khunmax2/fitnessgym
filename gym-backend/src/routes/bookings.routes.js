@@ -18,7 +18,7 @@ router.post('/', async (req, res) => {
 });
 
 // GET all — staff & admin
-router.get('/', auth, async (req, res) => {
+router.get('/', auth, role('admin', 'staff'), async (req, res) => {
   const { data, error } = await supabase
     .from('bookings')
     .select('*')

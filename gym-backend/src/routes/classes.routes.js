@@ -4,8 +4,22 @@ const supabase = require('../config/supabase');
 const auth = require('../middleware/auth.middleware');
 const role = require('../middleware/role.middleware');
 
+// GET /available — any logged-in user can browse classes with upcoming schedules
+router.get('/available', auth, async (req, res) => {
+  const { data, error } = await supabase
+    .from('classes')
+    .select('*, trainers(name)')
+    .order('name', { ascending: true });
+  if (error) return res.status(400).json({ error: error.message });
+  const result = data.map(c => ({
+    ...c,
+    trainer_name: c.trainers?.name || '-',
+  }));
+  res.json(result);
+});
+
 // GET all — admin & staff (join trainer name)
-router.get('/', auth, async (req, res) => {
+router.get('/', auth, role('admin', 'staff'), async (req, res) => {
   const { data, error } = await supabase
     .from('classes')
     .select('*, trainers(name)')
@@ -30,7 +44,7 @@ router.get('/:id', auth, async (req, res) => {
 });
 
 // POST create — admin & staff
-router.post('/', auth, async (req, res) => {
+router.post('/', auth, role('admin', 'staff'), async (req, res) => {
   const { data, error } = await supabase
     .from('classes')
     .insert([req.body])

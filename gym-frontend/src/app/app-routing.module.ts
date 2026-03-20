@@ -29,6 +29,7 @@ const routes: Routes = [
       { path: 'progress-reports', loadChildren: () => import('./features/progress-reports/progress-reports.module').then(m => m.ProgressReportsModule) },
       { path: 'profile',          loadChildren: () => import('./features/profile/profile.module').then(m => m.ProfileModule) },
       { path: 'users',            loadChildren: () => import('./features/user-management/user-management.module').then(m => m.UserManagementModule) },
+      { path: 'member-home',      loadChildren: () => import('./features/member-zone/member-zone.module').then(m => m.MemberZoneModule) },
     ]
   },
 

@@ -1,7 +1,9 @@
 import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { forkJoin } from 'rxjs';
+import { AuthService } from '../../core/services/auth.service';
 import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
 
@@ -23,9 +25,15 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   private revenueChart?: Chart;
   private memberChart?: Chart;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private router: Router, private authService: AuthService) {}
 
-  ngOnInit() { this.loadData(); }
+  ngOnInit() {
+    if (this.authService.currentUserSubject?.value?.role === 'member') {
+      this.router.navigate(['/dashboard/member-home']);
+      return;
+    }
+    this.loadData();
+  }
 
   ngAfterViewInit() { setTimeout(() => this.buildCharts(), 300); }
 

@@ -38,7 +38,7 @@ function validatePayment(body, isUpdate = false) {
 
 // ── Sanitize: pick only allowed fields ──
 function sanitize(body) {
-  const allowed = ['member_id', 'amount', 'payment_date', 'method', 'status', 'notes', 'payment_type', 'transaction_ref', 'due_date'];
+  const allowed = ['member_id', 'amount', 'payment_date', 'method', 'status', 'notes', 'payment_type', 'due_date'];
   const clean = {};
   for (const key of allowed) {
     if (body[key] !== undefined) clean[key] = body[key];
@@ -48,7 +48,7 @@ function sanitize(body) {
 }
 
 // ── POST generate PromptPay QR (must be before /:id routes) ──
-router.post('/promptpay-qr', auth, async (req, res) => {
+router.post('/promptpay-qr', auth, role('admin', 'staff'), async (req, res) => {
   const { amount } = req.body;
   if (!amount || isNaN(amount) || Number(amount) <= 0) {
     return res.status(400).json({ error: 'Valid amount is required' });
@@ -68,8 +68,24 @@ router.post('/promptpay-qr', auth, async (req, res) => {
   });
 });
 
+const resolveMemberId = require('../middleware/resolve-member');
+
+// ── GET /my — member gets own payments ──
+router.get('/my', auth, async (req, res) => {
+  const memberId = await resolveMemberId(req);
+  if (!memberId) return res.json([]);
+  const { data, error } = await supabase
+    .from('payments')
+    .select('*')
+    .eq('member_id', memberId)
+    .or('is_deleted.is.null,is_deleted.eq.false')
+    .order('payment_date', { ascending: false });
+  if (error) return res.status(400).json({ error: error.message });
+  res.json(data || []);
+});
+
 // ── GET all — admin & staff (exclude soft-deleted) ──
-router.get('/', auth, async (req, res) => {
+router.get('/', auth, role('admin', 'staff'), async (req, res) => {
   const { data, error } = await supabase
     .from('payments')
     .select('*, members(name)')
@@ -95,8 +111,8 @@ router.get('/:id', auth, async (req, res) => {
   res.json(data);
 });
 
-// ── POST create — with validation ──
-router.post('/', auth, async (req, res) => {
+// ── POST create — admin & staff ──
+router.post('/', auth, role('admin', 'staff'), async (req, res) => {
   const errors = validatePayment(req.body);
   if (errors.length) return res.status(400).json({ error: errors.join(', ') });
 
@@ -120,6 +136,18 @@ router.post('/', auth, async (req, res) => {
   const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '');
   const rand = Math.random().toString(36).substring(2, 6).toUpperCase();
   clean.invoice_number = `INV-${dateStr}-${rand}`;
+
+  // Auto-generate transaction_ref: PAY-YYYYMMDD-XXXX
+  const seq = Math.floor(1000 + Math.random() * 9000);
+  clean.transaction_ref = `PAY-${dateStr}-${seq}`;
+
+  // Auto-set due_date if not provided (payment_date + 30 days)
+  if (!clean.due_date && clean.payment_date) {
+    const pd = new Date(clean.payment_date);
+    pd.setDate(pd.getDate() + 30);
+    clean.due_date = pd.toISOString().slice(0, 10);
+  }
+
   clean.created_by = req.user.id;
 
   const { data, error } = await supabase
@@ -149,7 +177,7 @@ router.put('/:id', auth, role('admin'), async (req, res) => {
 });
 
 // ── PATCH confirm payment (staff/admin) ──
-router.patch('/:id/confirm', auth, async (req, res) => {
+router.patch('/:id/confirm', auth, role('admin', 'staff'), async (req, res) => {
   const { data, error } = await supabase
     .from('payments')
     .update({ status: 'paid', updated_by: req.user.id })

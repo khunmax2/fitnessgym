@@ -13,6 +13,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { ScheduleListComponent } from './schedules-list.component';
 import { ScheduleFormComponent } from './schedules-form.component';
 
@@ -25,7 +27,8 @@ import { ScheduleFormComponent } from './schedules-form.component';
     ]),
     MatTableModule, MatButtonModule, MatIconModule, MatCardModule,
     MatInputModule, MatDialogModule, MatSnackBarModule, MatFormFieldModule,
-    MatSelectModule, MatChipsModule, MatPaginatorModule
+    MatSelectModule, MatChipsModule, MatPaginatorModule,
+    MatDatepickerModule, MatNativeDateModule
   ]
 })
 export class SchedulesModule {}

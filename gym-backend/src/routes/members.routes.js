@@ -3,9 +3,28 @@ const router = express.Router();
 const supabase = require('../config/supabase');
 const auth = require('../middleware/auth.middleware');
 const role = require('../middleware/role.middleware');
+const resolveMemberId = require('../middleware/resolve-member');
+
+// GET /me — member gets own member record (fallback to users table)
+router.get('/me', auth, async (req, res) => {
+  const memberId = await resolveMemberId(req);
+  if (memberId) {
+    const { data } = await supabase.from('members').select('*').eq('id', memberId).single();
+    if (data) return res.json(data);
+  }
+
+  // Fallback: no member record yet, return basic info from users table
+  const { data: user, error: userErr } = await supabase
+    .from('users')
+    .select('id, name, email, phone, role, date_of_birth, gender')
+    .eq('id', req.user.id)
+    .single();
+  if (userErr) return res.status(404).json({ error: 'Profile not found' });
+  res.json({ ...user, status: 'active', membership_type: null, start_date: null, end_date: null, _fromUsers: true });
+});
 
 // GET all — admin & staff
-router.get('/', auth, async (req, res) => {
+router.get('/', auth, role('admin', 'staff'), async (req, res) => {
   const { data, error } = await supabase
     .from('members')
     .select('*')
@@ -26,7 +45,7 @@ router.get('/:id', auth, async (req, res) => {
 });
 
 // POST create — admin & staff
-router.post('/', auth, async (req, res) => {
+router.post('/', auth, role('admin', 'staff'), async (req, res) => {
   const { data, error } = await supabase
     .from('members')
     .insert([req.body])

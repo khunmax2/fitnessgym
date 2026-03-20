@@ -32,7 +32,7 @@ export class MembersFormComponent implements OnInit {
       phone:           [member?.phone || ''],
       date_of_birth:   [member?.date_of_birth ? new Date(member.date_of_birth) : null],
       gender:          [member?.gender || ''],
-      emergency_contact: [member?.emergency_contact || ''],
+      emergency_contact: [member?.emergency_contact || '', [Validators.pattern(/^0[0-9]{9}$/)]],
       emergency_name:  [member?.emergency_name || ''],
       medical_conditions: [member?.medical_conditions || ''],
       membership_type: [member?.membership_type || 'monthly'],

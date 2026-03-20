@@ -23,4 +23,10 @@ app.use('/api/bookings',      require('./routes/bookings.routes'));
 
 app.get('/', (req, res) => res.json({ message: '🏋️ Gym API running', version: '2.0' }));
 
+// Global error handler — ป้องกัน server crash จาก unhandled errors
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err.message);
+  res.status(500).json({ error: 'Internal server error' });
+});
+
 module.exports = app;

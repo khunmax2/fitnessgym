@@ -57,7 +57,10 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   }
 
-  ngOnInit() { this.load(); }
+  pendingMemberIds = new Set<string>();
+  pendingTrainerIds = new Set<string>();
+
+  ngOnInit() { this.load(); this.loadPendingLists(); }
   ngAfterViewInit() { this.dataSource.paginator = this.paginator; }
 
   load(): void {
@@ -67,6 +70,20 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
       error: () => { this.snack.open('Failed to load users', 'Close', { duration: 3000 }); this.loading = false; }
     });
   }
+
+  loadPendingLists(): void {
+    this.http.get<any[]>(`${this.api}/pending-members`).subscribe({
+      next: d => { this.pendingMemberIds = new Set(d.map(u => u.id)); },
+      error: () => { this.pendingMemberIds = new Set(); }
+    });
+    this.http.get<any[]>(`${this.api}/pending-trainers`).subscribe({
+      next: d => { this.pendingTrainerIds = new Set(d.map(u => u.id)); },
+      error: () => { this.pendingTrainerIds = new Set(); }
+    });
+  }
+
+  isPendingMember(userId: string) { return this.pendingMemberIds.has(userId); }
+  isPendingTrainer(userId: string) { return this.pendingTrainerIds.has(userId); }
 
   applyFilter(e: Event): void {
     this.dataSource.filter = (e.target as HTMLInputElement).value.trim().toLowerCase();
@@ -89,8 +106,37 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   deleteUser(userId: string): void {
     if (!confirm('Delete this user? This action cannot be undone.')) return;
     this.http.delete(`${this.api}/${userId}`).subscribe({
-      next: () => { this.snack.open('User deleted', 'Close', { duration: 3000 }); this.load(); },
+      next: () => { this.snack.open('User deleted', 'Close', { duration: 3000 }); this.load(); this.loadPendingLists(); },
       error: (err) => this.snack.open(err.error?.error || 'Delete failed', 'Close', { duration: 3000 })
+    });
+  }
+
+  addMemberFromUser(user: any): void {
+    const membership_type = prompt('Membership type', 'monthly');
+    const start_date = prompt('Start date (YYYY-MM-DD)', new Date().toISOString().slice(0,10));
+    const end_date = prompt('End date (YYYY-MM-DD)', new Date(Date.now()+30*86400000).toISOString().slice(0,10));
+    if (!membership_type || !start_date || !end_date) {
+      return;
+    }
+    this.http.post('/api/members/from-user', { user_id: user.id, membership_type, start_date, end_date, status: 'active' }).subscribe({
+      next: () => {
+        this.snack.open('Member profile created', 'Close', { duration: 3000 });
+        this.loadPendingLists();
+      },
+      error: err => this.snack.open(err.error?.error || 'Failed to create member profile', 'Close', { duration: 3000 })
+    });
+  }
+
+  addTrainerFromUser(user: any): void {
+    const specialty = prompt('Specialty');
+    const bio = prompt('Bio (optional)');
+    if (!specialty) return;
+    this.http.post('/api/trainers/from-user', { user_id: user.id, specialty, bio, status: 'active' }).subscribe({
+      next: () => {
+        this.snack.open('Trainer profile created', 'Close', { duration: 3000 });
+        this.loadPendingLists();
+      },
+      error: err => this.snack.open(err.error?.error || 'Failed to create trainer profile', 'Close', { duration: 3000 })
     });
   }
 

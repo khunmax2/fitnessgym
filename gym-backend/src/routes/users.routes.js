@@ -10,7 +10,7 @@ const VALID_ROLES = ['member', 'trainer', 'staff', 'admin'];
 // GET my profile
 router.get('/me', auth, async (req, res) => {
   const { data, error } = await supabase
-    .from('users').select('id,name,email,role,phone,created_at')
+    .from('users').select('id,name,email,role,phone,date_of_birth,gender,created_at')
     .eq('id', req.user.id).single();
   if (error) return res.status(404).json({ error: 'User not found' });
   res.json(data);
@@ -22,7 +22,7 @@ router.put('/me', auth, async (req, res) => {
   const { data, error } = await supabase
     .from('users').update({ name, phone })
     .eq('id', req.user.id)
-    .select('id,name,email,role,phone').single();
+    .select('id,name,email,role,phone,date_of_birth,gender').single();
   if (error) return res.status(400).json({ error: error.message });
   res.json(data);
 });
@@ -52,10 +52,36 @@ router.post('/change-password', auth, async (req, res) => {
 // GET all users — admin only
 router.get('/', auth, role('admin'), async (req, res) => {
   const { data, error } = await supabase
-    .from('users').select('id,name,email,role,phone,created_at')
+    .from('users').select('id,name,email,role,phone,date_of_birth,gender,created_at')
     .order('created_at', { ascending: false });
   if (error) return res.status(400).json({ error: error.message });
   res.json(data);
+});
+
+// GET pending member-users (in users.role='member' or 'trainer' but not yet in members)
+router.get('/pending-members', auth, role('admin'), async (req, res) => {
+  const [usersRes, membersRes] = await Promise.all([
+    supabase.from('users').select('id,name,email,phone,role,date_of_birth,gender,created_at').in('role', ['member', 'trainer']),
+    supabase.from('members').select('id')
+  ]);
+  if (usersRes.error) return res.status(400).json({ error: usersRes.error.message });
+  if (membersRes.error) return res.status(400).json({ error: membersRes.error.message });
+  const memberIds = new Set(membersRes.data.map(m => m.id));
+  const pending = usersRes.data.filter(u => !memberIds.has(u.id));
+  res.json(pending);
+});
+
+// GET pending trainer-users (role member or trainer, but not yet in trainers)
+router.get('/pending-trainers', auth, role('admin'), async (req, res) => {
+  const [usersRes, trainersRes] = await Promise.all([
+    supabase.from('users').select('id,name,email,phone,role,date_of_birth,gender,created_at').in('role', ['member','trainer']),
+    supabase.from('trainers').select('id')
+  ]);
+  if (usersRes.error) return res.status(400).json({ error: usersRes.error.message });
+  if (trainersRes.error) return res.status(400).json({ error: trainersRes.error.message });
+  const trainerIds = new Set(trainersRes.data.map(t => t.id));
+  const pending = usersRes.data.filter(u => !trainerIds.has(u.id));
+  res.json(pending);
 });
 
 // PATCH change role — admin only

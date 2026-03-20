@@ -14,8 +14,9 @@ import { ExportService } from '../../core/services/export.service';
   styleUrls: ['./members-list.component.scss']
 })
 export class MemberListComponent implements OnInit {
-  displayedColumns = ['name','email','membership_type','status','end_date','actions'];
+  displayedColumns = ['name','gender','email','membership_type','status','end_date','actions'];
   dataSource = new MatTableDataSource<any>([]);
+  pendingUsers: any[] = [];
   loading = false;
 
   get total()        { return this.dataSource.data.length; }
@@ -42,6 +43,14 @@ export class MemberListComponent implements OnInit {
       next: d => { this.dataSource.data = d; this.loading = false; },
       error: () => { this.snack.open('Failed to load', 'Close', { duration: 3000 }); this.loading = false; }
     });
+    this.loadPendingUsers();
+  }
+
+  loadPendingUsers() {
+    this.service.getPendingUsers().subscribe({
+      next: data => { this.pendingUsers = data; },
+      error: () => { this.pendingUsers = []; }
+    });
   }
 
   applyFilter(e: Event) {
@@ -53,9 +62,17 @@ export class MemberListComponent implements OnInit {
       this.snack.open('You do not have permission to edit members', 'Close', { duration: 3000 });
       return;
     }
-    this.dialog.open(MembersFormComponent, { width: '520px', data: item || null })
+    if (!item && !this.pendingUsers.length) {
+      this.snack.open('No pending users available to convert. Please ask users to register first.', 'Close', { duration: 3000 });
+      return;
+    }
+
+    const data = item ? { member: item } : { pendingUsers: this.pendingUsers };
+    this.dialog.open(MembersFormComponent, { width: '520px', data })
       .afterClosed().subscribe(r => { if (r) this.load(); });
   }
+
+
 
   delete(id: string) {
     if (!this.perm.canDelete('members')) {
@@ -65,7 +82,25 @@ export class MemberListComponent implements OnInit {
     if (!confirm('Delete this member?')) return;
     this.service.delete(id).subscribe({
       next: () => { this.snack.open('Deleted', 'Close', { duration: 3000 }); this.load(); },
-      error: (err) => this.snack.open(err.error?.error || 'Delete failed', 'Close', { duration: 3000 })
+      error: (err) => {
+        if (err.status === 409 && err.error?.relations) {
+          const r = err.error.relations;
+          const msg = `สมาชิกนี้มีข้อมูลที่เกี่ยวข้อง:\n` +
+            `- ${r.schedules} ตารางเรียน\n` +
+            `- ${r.payments} รายการชำระเงิน\n` +
+            `- ${r.diet_plans} แผนอาหาร\n` +
+            `- ${r.progress_reports} รายงานความก้าวหน้า\n\n` +
+            `ต้องการลบทั้งหมดหรือไม่? (ข้อมูลที่เกี่ยวข้องจะถูกลบด้วย)`;
+          if (confirm(msg)) {
+            this.service.forceDelete(id).subscribe({
+              next: () => { this.snack.open('ลบสมาชิกและข้อมูลที่เกี่ยวข้องเรียบร้อย', 'Close', { duration: 3000 }); this.load(); },
+              error: (e) => this.snack.open(e.error?.error || 'Delete failed', 'Close', { duration: 3000 })
+            });
+          }
+        } else {
+          this.snack.open(err.error?.error || 'Delete failed', 'Close', { duration: 3000 });
+        }
+      }
     });
   }
 
@@ -74,11 +109,16 @@ export class MemberListComponent implements OnInit {
   exportPDF() {
     this.exporter.exportPDF('Members Report', this.dataSource.data, [
       { key: 'name',            label: 'Name' },
+      { key: 'gender',          label: 'Gender' },
       { key: 'email',           label: 'Email' },
       { key: 'phone',           label: 'Phone' },
+      { key: 'date_of_birth',   label: 'Birth Date' },
       { key: 'membership_type', label: 'Type' },
       { key: 'status',          label: 'Status' },
       { key: 'end_date',        label: 'Expiry' },
+      { key: 'emergency_name',  label: 'Emergency Name' },
+      { key: 'emergency_contact', label: 'Emergency Tel' },
+      { key: 'medical_conditions', label: 'Medical' },
     ]);
   }
 

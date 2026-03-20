@@ -3,31 +3,46 @@
   {{ isEdit ? 'Edit' : 'New' }} <span style="color:var(--red)">Member</span>
 </div>
 
-<mat-dialog-content>
+<mat-dialog-content >
   <form [formGroup]="form" class="gym-form">
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Full Name</mat-label>
-      <mat-icon matPrefix>person</mat-icon>
-      <input matInput formControlName="name" placeholder="ชื่อ นามสกุล">
-      <mat-error>Required</mat-error>
-    </mat-form-field>
+    <ng-container *ngIf="!isEdit">
+      <mat-form-field appearance="outline" class="full-width" style="margin-bottom: 12px;">
+        <mat-label>Select User</mat-label>
+        <mat-icon matPrefix>person</mat-icon>
+        <mat-select [(value)]="selectedPendingUserId" (selectionChange)="onPendingUserSelected()" required>
+          <mat-option [value]="null">-- choose user --</mat-option>
+          <mat-option *ngFor="let u of pendingUsers" [value]="u.id">
+            {{ u.name || 'No name' }} - {{ u.email }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <!-- <p style="color:#9ca3af;font-size:0.8rem;margin-top:4px;">อีเมล/เบอร์โทรศัพท์/ชื่อ จะถูกดึงโดยอัตโนมัติจากผู้ใช้ที่กำลังรอการยืนยันที่เลือกไว้</p> -->
+    </ng-container>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Email</mat-label>
-      <mat-icon matPrefix>alternate_email</mat-icon>
-      <input matInput type="email" formControlName="email">
-    </mat-form-field>
+    <ng-container *ngIf="isEdit || selectedPendingUser" >
+      <mat-form-field appearance="outline" class="full-width" style="margin-bottom: 12px;">
+        <mat-label>Full Name</mat-label>
+        <mat-icon matPrefix>person</mat-icon>
+        <input matInput formControlName="name" placeholder="ชื่อ นามสกุล" readonly>
+      </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Phone</mat-label>
-      <mat-icon matPrefix>phone</mat-icon>
-      <input matInput formControlName="phone" placeholder="08x-xxx-xxxx">
-    </mat-form-field>
+      <mat-form-field appearance="outline" class="full-width" style="margin-bottom: 12px;">
+        <mat-label>Email</mat-label>
+        <mat-icon matPrefix>alternate_email</mat-icon>
+        <input matInput type="email" formControlName="email" readonly>
+      </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Membership Type</mat-label>
+      <mat-form-field appearance="outline" class="full-width" style="margin-bottom: 12px;">
+        <mat-label>Phone</mat-label>
+        <mat-icon matPrefix>phone</mat-icon>
+        <input matInput formControlName="phone" placeholder="08x-xxx-xxxx" readonly>
+      </mat-form-field>
+    </ng-container>
+
+    <mat-form-field appearance="outline" class="full-width" style="margin-bottom: 12px;">
+      <mat-label >Membership Type</mat-label >
       <mat-icon matPrefix>card_membership</mat-icon>
-      <mat-select formControlName="membership_type">
+      <mat-select formControlName="membership_type" style="margin-bottom: 12px;">
         <mat-option value="monthly">Monthly</mat-option>
         <mat-option value="yearly">Yearly</mat-option>
         <mat-option value="trial">Trial</mat-option>
@@ -35,23 +50,61 @@
     </mat-form-field>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline" style="margin-bottom: 12px;">
+        <mat-label>Date of Birth</mat-label>
+        <input matInput [matDatepicker]="dobPicker" formControlName="date_of_birth" placeholder="เลือกวันเกิด">
+        <mat-datepicker-toggle matSuffix [for]="dobPicker"></mat-datepicker-toggle>
+        <mat-datepicker #dobPicker></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field appearance="outline" style="margin-bottom: 12px;">
+        <mat-label>Gender</mat-label>
+        <mat-icon matPrefix>wc</mat-icon>
+        <mat-select formControlName="gender">
+          <mat-option value="">-- not set --</mat-option>
+          <mat-option value="male">Male (ชาย)</mat-option>
+          <mat-option value="female">Female (หญิง)</mat-option>
+          <mat-option value="other">Other (อื่นๆ)</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <mat-form-field appearance="outline" style="margin-bottom: 12px;">
         <mat-label>Start Date</mat-label>
         <input matInput type="date" formControlName="start_date">
       </mat-form-field>
-      <mat-form-field appearance="outline">
+      <mat-form-field appearance="outline" style="margin-bottom: 12px;">
         <mat-label>End Date</mat-label>
         <input matInput type="date" formControlName="end_date">
       </mat-form-field>
     </div>
 
-    <mat-form-field appearance="outline" class="full-width">
+    <mat-form-field appearance="outline" class="full-width" style="margin-bottom: 12px;">
       <mat-label>Status</mat-label>
       <mat-select formControlName="status">
         <mat-option value="active">Active</mat-option>
         <mat-option value="inactive">Inactive</mat-option>
         <mat-option value="expired">Expired</mat-option>
       </mat-select>
+    </mat-form-field>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <mat-form-field appearance="outline" style="margin-bottom: 12px;">
+        <mat-label>Emergency Name</mat-label>
+        <mat-icon matPrefix>contact_emergency</mat-icon>
+        <input matInput formControlName="emergency_name" placeholder="ชื่อผู้ติดต่อฉุกเฉิน">
+      </mat-form-field>
+      <mat-form-field appearance="outline" style="margin-bottom: 12px;">
+        <mat-label>Emergency Contact</mat-label>
+        <mat-icon matPrefix>emergency</mat-icon>
+        <input matInput formControlName="emergency_contact" placeholder="08x-xxx-xxxx">
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width" style="margin-bottom: 12px;">
+      <mat-label>Medical Conditions</mat-label>
+      <mat-icon matPrefix>medical_services</mat-icon>
+      <textarea matInput formControlName="medical_conditions" rows="2" placeholder="โรคประจำตัว / อาการแพ้ / ข้อควรระวัง"></textarea>
     </mat-form-field>
   </form>
 </mat-dialog-content>

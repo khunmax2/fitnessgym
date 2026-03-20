@@ -1,3 +1,13 @@
 .section-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; margin-top:8px; }
 .animate-in { animation:fadeUp .4s ease both; }
 @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+.stats-grid .stat-card:nth-child(1) { animation-delay:.05s }
+.stats-grid .stat-card:nth-child(2) { animation-delay:.1s }
+.stats-grid .stat-card:nth-child(3) { animation-delay:.15s }
+.stats-grid .stat-card:nth-child(4) { animation-delay:.2s }
+.section-header { animation-delay: .15s }
+.table-card { animation-delay: .25s }
+
+.gym-badge.booked { background: rgba(33,150,243,.15); color: #2196f3; }
+.gym-badge.completed { background: rgba(0,200,83,.15); color: #00c853; }
+.gym-badge.cancelled { background: rgba(232,0,61,.15); color: #e8003d; }

@@ -60,6 +60,28 @@
 
         <div class="two-col">
           <div class="field-wrap">
+            <div class="field-label">Date of Birth <span class="optional">(optional)</span></div>
+            <mat-form-field appearance="outline" class="full-width reg-mat-field">
+              <input matInput [matDatepicker]="dobPicker" formControlName="date_of_birth" placeholder="เลือกวันเกิด">
+              <mat-datepicker-toggle matSuffix [for]="dobPicker"></mat-datepicker-toggle>
+              <mat-datepicker #dobPicker></mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div class="field-wrap">
+            <div class="field-label">Gender <span class="optional">(optional)</span></div>
+            <mat-form-field appearance="outline" class="full-width reg-mat-field">
+              <mat-select formControlName="gender" placeholder="เลือกเพศ">
+                <mat-option value="">-- ไม่ระบุ --</mat-option>
+                <mat-option value="male">Male (ชาย)</mat-option>
+                <mat-option value="female">Female (หญิง)</mat-option>
+                <mat-option value="other">Other (อื่นๆ)</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="field-wrap">
             <div class="field-label">Password</div>
             <div class="field-input" [class.err]="form.get('password')?.invalid && form.get('password')?.touched">
               <mat-icon>lock_outline</mat-icon>

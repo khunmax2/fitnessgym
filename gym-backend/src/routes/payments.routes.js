@@ -8,10 +8,15 @@ const role = require('../middleware/role.middleware');
 router.get('/', auth, async (req, res) => {
   const { data, error } = await supabase
     .from('payments')
-    .select('*')
+    .select('*, members(name)')
     .order('created_at', { ascending: false });
   if (error) return res.status(400).json({ error: error.message });
-  res.json(data);
+  const mapped = (data || []).map(d => ({
+    ...d,
+    member_name: d.members?.name || '-',
+  }));
+  mapped.forEach(d => { delete d.members; });
+  res.json(mapped);
 });
 
 // GET one — admin & staff

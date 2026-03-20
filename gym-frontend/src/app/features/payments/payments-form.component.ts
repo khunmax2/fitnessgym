@@ -12,6 +12,7 @@ export class PaymentFormComponent implements OnInit {
   form!: FormGroup;
   isEdit = false;
   loading = false;
+  members: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -22,22 +23,30 @@ export class PaymentFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.isEdit = !!this.data;
+    this.members = this.data?.members || [];
+    const payment = this.data?.payment;
+    this.isEdit = !!payment;
+
     this.form = this.fb.group({
-      name: [this.data?.name || '', Validators.required],
-      email: [this.data?.email || '', [Validators.email]],
-      phone: [this.data?.phone || ''],
-      status: [this.data?.status || 'active']
+      member_id: [payment?.member_id || '', Validators.required],
+      amount: [payment?.amount || null, [Validators.required, Validators.min(0)]],
+      payment_date: [payment?.payment_date ? new Date(payment.payment_date) : new Date(), Validators.required],
+      method: [payment?.method || 'cash'],
+      status: [payment?.status || 'paid'],
+      notes: [payment?.notes || '']
     });
-    if (this.data) this.form.patchValue(this.data);
   }
 
   onSubmit(): void {
     if (this.form.invalid) return;
     this.loading = true;
+
+    const val = { ...this.form.value };
+    if (val.payment_date instanceof Date) val.payment_date = val.payment_date.toISOString().slice(0, 10);
+
     const action = this.isEdit
-      ? this.service.update(this.data.id, this.form.value)
-      : this.service.create(this.form.value);
+      ? this.service.update(this.data.payment.id, val)
+      : this.service.create(val);
 
     action.subscribe({
       next: () => {

@@ -14,8 +14,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatOptionModule } from '@angular/material/core';
+import { MatOptionModule, MatNativeDateModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 import { MemberListComponent } from './members-list.component';
 import { MembersFormComponent } from './members-form.component';
@@ -40,7 +41,9 @@ import { MembersFormComponent } from './members-form.component';
     MatButtonModule,
     MatSnackBarModule,
     MatChipsModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ]
 })
 export class MembersModule {}

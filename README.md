@@ -78,10 +78,13 @@ npm run dev
 
 ```bash
 cd gym-frontend
-npm install
+npm install 
 npm start
 ```
-
+ถ้ามีการแก้ไข 
+```bash
+npm run build
+```
 เปิดเว็บเบราว์เซอร์ที่ `http://localhost:4200`
 
 > Frontend จะเรียก API ที่ `http://localhost:3000/api` (กำหนดใน `proxy.conf.json` แล้ว)
@@ -173,8 +176,12 @@ gym-management/
 | POST | /api/auth/login | เข้าสู่ระบบ |
 | GET | /api/members | ดูสมาชิกทั้งหมด |
 | POST | /api/members | เพิ่มสมาชิก |
+| POST | /api/members/from-user | เพิ่มสมาชิกจาก user ที่สมัครไว้ | 
 | PUT | /api/members/:id | แก้ไขสมาชิก |
 | DELETE | /api/members/:id | ลบสมาชิก |
+| GET | /api/users/pending-members | ดู user role member ที่ยังไม่ได้สร้าง member | 
+| POST | /api/trainers/from-user | เพิ่มเทรนเนอร์จาก user ที่สมัครไว้ |
+| GET | /api/users/pending-trainers | ดู user role trainer ที่ยังไม่ได้สร้าง trainer |
 | ... | (เหมือนกันทุก resource) | ... |
 
 > ทุก endpoint ยกเว้น `/api/auth/*` ต้องส่ง `Authorization: Bearer <token>` ใน header

@@ -12,18 +12,22 @@ const signToken = (user) => jwt.sign(
 
 // POST /api/auth/register — role บังคับเป็น 'member' เสมอ
 router.post('/register', async (req, res) => {
-  const { name, email, password, phone } = req.body;
+  const { name, email, password, phone, date_of_birth, gender } = req.body;
+  const role = 'member';
+
   if (!name || !email || !password)
     return res.status(400).json({ error: 'Name, email and password are required.' });
   if (password.length < 6)
     return res.status(400).json({ error: 'Password must be at least 6 characters.' });
+  if (gender && !['male','female','other'].includes(gender))
+    return res.status(400).json({ error: 'Gender must be male, female, or other.' });
 
   const hashed = await bcrypt.hash(password, 10);
 
   const { data, error } = await supabase
     .from('users')
-    .insert([{ name, email, phone: phone || null, password: hashed, role: 'member' }])
-    .select('id, name, email, role, phone')
+    .insert([{ name, email, phone: phone || null, password: hashed, role, date_of_birth: date_of_birth || null, gender: gender || null }])
+    .select('id, name, email, role, phone, date_of_birth, gender')
     .single();
 
   if (error) {

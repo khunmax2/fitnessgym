@@ -23,13 +23,14 @@ export class EquipmentFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.isEdit = !!this.data;
+    const today = new Date().toISOString().split('T')[0];
     this.form = this.fb.group({
-      name: [this.data?.name || '', Validators.required],
-      email: [this.data?.email || '', [Validators.email]],
-      phone: [this.data?.phone || ''],
-      status: [this.data?.status || 'active']
+      name:             [this.data?.name || '', Validators.required],
+      quantity:         [this.data?.quantity ?? 1, [Validators.required, Validators.min(0)]],
+      status:           [this.data?.status || 'available'],
+      last_maintenance: [this.data?.last_maintenance?.slice(0, 10) || today],
+      notes:            [this.data?.notes || '']
     });
-    if (this.data) this.form.patchValue(this.data);
   }
 
   onSubmit(): void {

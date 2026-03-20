@@ -12,6 +12,8 @@ export class ScheduleFormComponent implements OnInit {
   form!: FormGroup;
   isEdit = false;
   loading = false;
+  classes: any[] = [];
+  members: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -22,22 +24,29 @@ export class ScheduleFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.isEdit = !!this.data;
+    const schedule = this.data?.schedule || null;
+    this.classes = this.data?.classes || [];
+    this.members = this.data?.members || [];
+    this.isEdit = !!schedule;
+
+    const now = new Date();
+    const defaultDateTime = now.toISOString().slice(0, 16);
+
     this.form = this.fb.group({
-      name: [this.data?.name || '', Validators.required],
-      email: [this.data?.email || '', [Validators.email]],
-      phone: [this.data?.phone || ''],
-      status: [this.data?.status || 'active']
+      class_id:     [schedule?.class_id || '', Validators.required],
+      member_id:    [schedule?.member_id || '', Validators.required],
+      scheduled_at: [schedule?.scheduled_at?.slice(0, 16) || defaultDateTime, Validators.required],
+      status:       [schedule?.status || 'booked']
     });
-    if (this.data) this.form.patchValue(this.data);
   }
 
   onSubmit(): void {
     if (this.form.invalid) return;
     this.loading = true;
+    const payload = { ...this.form.value };
     const action = this.isEdit
-      ? this.service.update(this.data.id, this.form.value)
-      : this.service.create(this.form.value);
+      ? this.service.update(this.data.schedule.id, payload)
+      : this.service.create(payload);
 
     action.subscribe({
       next: () => {

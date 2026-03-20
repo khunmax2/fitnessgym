@@ -12,6 +12,7 @@ export class ClassFormComponent implements OnInit {
   form!: FormGroup;
   isEdit = false;
   loading = false;
+  trainers: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -22,22 +23,28 @@ export class ClassFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.isEdit = !!this.data;
+    const cls = this.data?.classItem || null;
+    this.trainers = this.data?.trainers || [];
+    this.isEdit = !!cls;
+
     this.form = this.fb.group({
-      name: [this.data?.name || '', Validators.required],
-      email: [this.data?.email || '', [Validators.email]],
-      phone: [this.data?.phone || ''],
-      status: [this.data?.status || 'active']
+      name:             [cls?.name || '', Validators.required],
+      trainer_id:       [cls?.trainer_id || ''],
+      capacity:         [cls?.capacity ?? 10, [Validators.required, Validators.min(1)]],
+      duration_minutes: [cls?.duration_minutes ?? 60, [Validators.required, Validators.min(1)]],
+      description:      [cls?.description || '']
     });
-    if (this.data) this.form.patchValue(this.data);
   }
 
   onSubmit(): void {
     if (this.form.invalid) return;
     this.loading = true;
+    const payload = { ...this.form.value };
+    if (!payload.trainer_id) payload.trainer_id = null;
+
     const action = this.isEdit
-      ? this.service.update(this.data.id, this.form.value)
-      : this.service.create(this.form.value);
+      ? this.service.update(this.data.classItem.id, payload)
+      : this.service.create(payload);
 
     action.subscribe({
       next: () => {

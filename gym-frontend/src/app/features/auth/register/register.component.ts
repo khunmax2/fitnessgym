@@ -29,6 +29,8 @@ export class RegisterComponent {
       name:            ['', [Validators.required, Validators.minLength(2)]],
       email:           ['', [Validators.required, Validators.email]],
       phone:           [''],
+      date_of_birth:   [null],
+      gender:          [''],
       password:        ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required],
     }, { validators: this.passwordMatch });
@@ -45,9 +47,10 @@ export class RegisterComponent {
     this.loading = true;
     this.errorMsg = '';
 
-    const { name, email, password, phone } = this.form.value;
+    const { name, email, password, phone, date_of_birth, gender } = this.form.value;
+    const dob = date_of_birth instanceof Date ? date_of_birth.toISOString().slice(0, 10) : date_of_birth;
 
-    this.authService.register(name, email, password, phone).subscribe({
+    this.authService.register(name, email, password, phone, dob, gender).subscribe({
       next: () => {
         this.loading = false;
         this.snackBar.open('สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ', 'ปิด', {

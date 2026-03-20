@@ -12,6 +12,7 @@ export class ProgressReportFormComponent implements OnInit {
   form!: FormGroup;
   isEdit = false;
   loading = false;
+  members: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -22,22 +23,71 @@ export class ProgressReportFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.isEdit = !!this.data;
+    this.members = this.data?.members || [];
+    const report = this.data?.report;
+    this.isEdit = !!report;
+
     this.form = this.fb.group({
-      name: [this.data?.name || '', Validators.required],
-      email: [this.data?.email || '', [Validators.email]],
-      phone: [this.data?.phone || ''],
-      status: [this.data?.status || 'active']
+      member_id: [report?.member_id || '', Validators.required],
+      height: [report?.height || null],
+      weight: [report?.weight || null],
+      bmi: [{ value: report?.bmi || null, disabled: true }],
+      body_fat_percent: [report?.body_fat_percent || null],
+      waist: [report?.waist || null],
+      hip: [report?.hip || null],
+      chest: [report?.chest || null],
+      arm: [report?.arm || null],
+      muscle_mass: [report?.muscle_mass || null],
+      bmr: [{ value: report?.bmr || null, disabled: true }],
+      notes: [report?.notes || ''],
+      report_date: [report?.report_date ? new Date(report.report_date) : new Date(), Validators.required]
     });
-    if (this.data) this.form.patchValue(this.data);
+
+    // Auto-calculate BMI when weight or height changes
+    this.form.get('weight')!.valueChanges.subscribe(() => { this.calcBmi(); this.calcBmr(); });
+    this.form.get('height')!.valueChanges.subscribe(() => { this.calcBmi(); this.calcBmr(); });
+    this.form.get('member_id')!.valueChanges.subscribe(() => this.calcBmr());
+    this.calcBmi();
+    this.calcBmr();
+  }
+
+  calcBmi(): void {
+    const w = this.form.get('weight')!.value;
+    const h = this.form.get('height')!.value;
+    if (w && h && h > 0) {
+      const hm = h / 100;
+      this.form.get('bmi')!.setValue(+(w / (hm * hm)).toFixed(1));
+    } else {
+      this.form.get('bmi')!.setValue(null);
+    }
+  }
+
+  /** BMR (Mifflin-St Jeor): Male = (10×w)+(6.25×h)−(5×age)+5, Female = (10×w)+(6.25×h)−(5×age)−161 */
+  calcBmr(): void {
+    const w = this.form.get('weight')!.value;
+    const h = this.form.get('height')!.value;
+    const memberId = this.form.get('member_id')!.value;
+    const member = this.members.find(m => m.id === memberId);
+    if (!w || !h || !member?.date_of_birth || !member?.gender) {
+      this.form.get('bmr')!.setValue(null);
+      return;
+    }
+    const age = Math.floor((Date.now() - new Date(member.date_of_birth).getTime()) / 31557600000);
+    let bmr = (10 * w) + (6.25 * h) - (5 * age);
+    bmr += member.gender === 'female' ? -161 : 5;
+    this.form.get('bmr')!.setValue(Math.round(bmr));
   }
 
   onSubmit(): void {
     if (this.form.invalid) return;
     this.loading = true;
+
+    const val = { ...this.form.getRawValue() };
+    if (val.report_date instanceof Date) val.report_date = val.report_date.toISOString().slice(0, 10);
+
     const action = this.isEdit
-      ? this.service.update(this.data.id, this.form.value)
-      : this.service.create(this.form.value);
+      ? this.service.update(this.data.report.id, val)
+      : this.service.create(val);
 
     action.subscribe({
       next: () => {

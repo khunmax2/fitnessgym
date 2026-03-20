@@ -1,37 +1,51 @@
-<h2 mat-dialog-title>{{ isEdit ? 'Edit' : 'Add' }} Equipment</h2>
+<div class="gym-dialog-title">
+  <mat-icon>{{ isEdit ? 'edit' : 'fitness_center' }}</mat-icon>
+  {{ isEdit ? 'Edit' : 'New' }} <span style="color:var(--red)">Equipment</span>
+</div>
 
 <mat-dialog-content>
-  <form [formGroup]="form" class="form-grid">
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Name</mat-label>
-      <input matInput formControlName="name" placeholder="Enter name">
+  <form [formGroup]="form" class="gym-form">
+    <mat-form-field appearance="outline" class="full-width" style="margin-bottom: 12px;">
+      <mat-label>Equipment Name</mat-label>
+      <mat-icon matPrefix>fitness_center</mat-icon>
+      <input matInput formControlName="name" placeholder="e.g. Treadmill, Dumbbells">
       <mat-error>Name is required</mat-error>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Email</mat-label>
-      <input matInput type="email" formControlName="email" placeholder="email@example.com">
-      <mat-error>Invalid email</mat-error>
+    <mat-form-field appearance="outline" class="full-width" style="margin-bottom: 12px;">
+      <mat-label>Quantity</mat-label>
+      <mat-icon matPrefix>inventory_2</mat-icon>
+      <input matInput type="number" formControlName="quantity" min="0">
+      <mat-error>Quantity is required (min 0)</mat-error>
     </mat-form-field>
 
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Phone</mat-label>
-      <input matInput formControlName="phone" placeholder="08x-xxx-xxxx">
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
+    <mat-form-field appearance="outline" class="full-width" style="margin-bottom: 12px;">
       <mat-label>Status</mat-label>
+      <mat-icon matPrefix>info</mat-icon>
       <mat-select formControlName="status">
-        <mat-option value="active">Active</mat-option>
-        <mat-option value="inactive">Inactive</mat-option>
+        <mat-option value="available">Available</mat-option>
+        <mat-option value="maintenance">Under Maintenance</mat-option>
+        <mat-option value="out_of_service">Out of Service</mat-option>
       </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width" style="margin-bottom: 12px;">
+      <mat-label>Last Maintenance</mat-label>
+      <mat-icon matPrefix>build</mat-icon>
+      <input matInput type="date" formControlName="last_maintenance">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width" style="margin-bottom: 12px;">
+      <mat-label>Notes</mat-label>
+      <mat-icon matPrefix>notes</mat-icon>
+      <textarea matInput formControlName="notes" rows="3" placeholder="Additional notes..."></textarea>
     </mat-form-field>
   </form>
 </mat-dialog-content>
 
 <mat-dialog-actions align="end">
-  <button mat-button (click)="onCancel()">Cancel</button>
-  <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="loading || form.invalid">
+  <button class="gym-btn outline" style="clip-path:none" (click)="onCancel()">Cancel</button>
+  <button class="gym-btn primary" (click)="onSubmit()" [disabled]="loading || form.invalid">
     {{ loading ? 'Saving...' : (isEdit ? 'Update' : 'Create') }}
   </button>
 </mat-dialog-actions>

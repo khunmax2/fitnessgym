@@ -13,6 +13,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatOptionModule } from '@angular/material/core';
 import { TrainerListComponent } from './trainers-list.component';
 import { TrainerFormComponent } from './trainers-form.component';
 
@@ -25,7 +27,8 @@ import { TrainerFormComponent } from './trainers-form.component';
     ]),
     MatTableModule, MatButtonModule, MatIconModule, MatCardModule,
     MatInputModule, MatDialogModule, MatSnackBarModule, MatFormFieldModule,
-    MatSelectModule, MatChipsModule, MatPaginatorModule
+    MatSelectModule, MatChipsModule, MatPaginatorModule,
+    MatTooltipModule, MatOptionModule
   ]
 })
 export class TrainersModule {}

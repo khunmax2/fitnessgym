@@ -8,10 +8,16 @@ const role = require('../middleware/role.middleware');
 router.get('/', auth, async (req, res) => {
   const { data, error } = await supabase
     .from('diet_plans')
-    .select('*')
+    .select('*, members(name), trainers(name)')
     .order('created_at', { ascending: false });
   if (error) return res.status(400).json({ error: error.message });
-  res.json(data);
+  const mapped = (data || []).map(d => ({
+    ...d,
+    member_name: d.members?.name || '-',
+    trainer_name: d.trainers?.name || '-',
+  }));
+  mapped.forEach(d => { delete d.members; delete d.trainers; });
+  res.json(mapped);
 });
 
 // GET one — admin & staff

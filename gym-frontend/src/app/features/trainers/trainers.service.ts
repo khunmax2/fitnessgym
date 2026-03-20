@@ -14,4 +14,8 @@ export class TrainerService {
   create(data: any): Observable<any> { return this.http.post<any>(this.apiUrl, data); }
   update(id: string, data: any): Observable<any> { return this.http.put<any>(`${this.apiUrl}/${id}`, data); }
   delete(id: string): Observable<any> { return this.http.delete<any>(`${this.apiUrl}/${id}`); }
+  forceDelete(id: string): Observable<any> { return this.http.delete<any>(`${this.apiUrl}/${id}?force=true`); }
+
+  getPendingUsers(): Observable<any[]> { return this.http.get<any[]>(`${environment.apiUrl}/users/pending-trainers`); }
+  convertFromUser(payload: any): Observable<any> { return this.http.post<any>(`${this.apiUrl}/from-user`, payload); }
 }

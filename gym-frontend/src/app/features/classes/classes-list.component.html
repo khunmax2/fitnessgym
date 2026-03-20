@@ -3,9 +3,37 @@
     <div class="page-title">Classes <span>List</span></div>
     <div class="page-sub">Manage all Classes</div>
   </div>
-  <button class="gym-btn primary" (click)="openForm()">
-    <mat-icon>add</mat-icon> Add New
-  </button>
+  <div style="display:flex;gap:8px">
+    <button class="gym-btn outline" (click)="exportCSV()" *ngIf="permission.canRead('classes')">
+      <mat-icon>download</mat-icon> CSV
+    </button>
+    <button class="gym-btn outline" (click)="exportPDF()" *ngIf="permission.canRead('classes')">
+      <mat-icon>picture_as_pdf</mat-icon> PDF
+    </button>
+    <button class="gym-btn primary" (click)="openForm()" *ngIf="permission.canCreate('classes')">
+      <mat-icon>add</mat-icon> Add New
+    </button>
+  </div>
+</div>
+
+<!-- Stat Cards -->
+<div class="stat-cards animate-in">
+  <mat-card class="stat-card">
+    <mat-icon>school</mat-icon>
+    <div class="stat-info"><span class="stat-value">{{ totalClasses }}</span><span class="stat-label">Total Classes</span></div>
+  </mat-card>
+  <mat-card class="stat-card" style="animation-delay:.08s">
+    <mat-icon>groups</mat-icon>
+    <div class="stat-info"><span class="stat-value">{{ totalCapacity }}</span><span class="stat-label">Total Capacity</span></div>
+  </mat-card>
+  <mat-card class="stat-card" style="animation-delay:.16s">
+    <mat-icon>timer</mat-icon>
+    <div class="stat-info"><span class="stat-value">{{ avgDuration }} min</span><span class="stat-label">Avg Duration</span></div>
+  </mat-card>
+  <mat-card class="stat-card" style="animation-delay:.24s">
+    <mat-icon>person</mat-icon>
+    <div class="stat-info"><span class="stat-value">{{ withTrainer }}</span><span class="stat-label">With Trainer</span></div>
+  </mat-card>
 </div>
 
 <mat-card class="table-card animate-in">
@@ -17,19 +45,36 @@
   </div>
 
   <mat-table [dataSource]="dataSource">
-    <ng-container *ngFor="let col of displayedColumns.slice(0,-1)" [matColumnDef]="col">
-      <mat-header-cell *matHeaderCellDef>{{ col | titlecase }}</mat-header-cell>
-      <mat-cell *matCellDef="let row">
-        <span *ngIf="col !== 'status'">{{ row[col] }}</span>
-        <span *ngIf="col === 'status'" class="gym-badge" [class]="row[col]">{{ row[col] }}</span>
-      </mat-cell>
+    <ng-container matColumnDef="name">
+      <mat-header-cell *matHeaderCellDef>Name</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{ row.name }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="trainer_name">
+      <mat-header-cell *matHeaderCellDef>Trainer</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{ row.trainer_name || '-' }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="capacity">
+      <mat-header-cell *matHeaderCellDef>Capacity</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{ row.capacity }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="duration_minutes">
+      <mat-header-cell *matHeaderCellDef>Duration</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{ row.duration_minutes }} min</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="description">
+      <mat-header-cell *matHeaderCellDef>Description</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{ row.description || '-' }}</mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="actions">
       <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
       <mat-cell *matCellDef="let row">
-        <button mat-icon-button (click)="openForm(row)" style="color:#888"><mat-icon>edit</mat-icon></button>
-        <button mat-icon-button (click)="delete(row.id)" style="color:#e8003d"><mat-icon>delete_outline</mat-icon></button>
+        <button mat-icon-button (click)="openForm(row)" *ngIf="permission.canUpdate('classes')" style="color:#888">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button (click)="delete(row.id)" *ngIf="permission.canDelete('classes')" style="color:#e8003d">
+          <mat-icon>delete_outline</mat-icon>
+        </button>
       </mat-cell>
     </ng-container>
 

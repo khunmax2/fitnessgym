@@ -12,6 +12,8 @@ export class DietPlanFormComponent implements OnInit {
   form!: FormGroup;
   isEdit = false;
   loading = false;
+  members: any[] = [];
+  trainers: any[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -22,22 +24,50 @@ export class DietPlanFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.isEdit = !!this.data;
+    this.members = this.data?.members || [];
+    this.trainers = this.data?.trainers || [];
+    const diet = this.data?.diet;
+    this.isEdit = !!diet;
+
+    const meals = diet?.meals || {};
+
     this.form = this.fb.group({
-      name: [this.data?.name || '', Validators.required],
-      email: [this.data?.email || '', [Validators.email]],
-      phone: [this.data?.phone || ''],
-      status: [this.data?.status || 'active']
+      member_id: [diet?.member_id || '', Validators.required],
+      trainer_id: [diet?.trainer_id || ''],
+      calories: [diet?.calories || null],
+      breakfast: [meals.breakfast || ''],
+      lunch: [meals.lunch || ''],
+      dinner: [meals.dinner || ''],
+      snacks: [meals.snacks || ''],
+      notes: [diet?.notes || ''],
+      start_date: [diet?.start_date ? new Date(diet.start_date) : null],
+      end_date: [diet?.end_date ? new Date(diet.end_date) : null]
     });
-    if (this.data) this.form.patchValue(this.data);
   }
 
   onSubmit(): void {
     if (this.form.invalid) return;
     this.loading = true;
+
+    const val = { ...this.form.value };
+    // Format dates to YYYY-MM-DD
+    if (val.start_date instanceof Date) val.start_date = val.start_date.toISOString().slice(0, 10);
+    if (val.end_date instanceof Date) val.end_date = val.end_date.toISOString().slice(0, 10);
+    // Build meals object from separate fields
+    val.meals = {
+      breakfast: val.breakfast || '',
+      lunch: val.lunch || '',
+      dinner: val.dinner || '',
+      snacks: val.snacks || ''
+    };
+    delete val.breakfast;
+    delete val.lunch;
+    delete val.dinner;
+    delete val.snacks;
+
     const action = this.isEdit
-      ? this.service.update(this.data.id, this.form.value)
-      : this.service.create(this.form.value);
+      ? this.service.update(this.data.diet.id, val)
+      : this.service.create(val);
 
     action.subscribe({
       next: () => {

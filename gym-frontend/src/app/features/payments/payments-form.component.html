@@ -1,30 +1,51 @@
 <h2 mat-dialog-title>{{ isEdit ? 'Edit' : 'Add' }} Payment</h2>
 
 <mat-dialog-content>
-  <form [formGroup]="form" class="form-grid">
+  <form [formGroup]="form" style="display:flex;flex-direction:column;gap:12px">
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Name</mat-label>
-      <input matInput formControlName="name" placeholder="Enter name">
-      <mat-error>Name is required</mat-error>
+      <mat-label>Member</mat-label>
+      <mat-select formControlName="member_id">
+        <mat-option *ngFor="let m of members" [value]="m.id">{{ m.name }}</mat-option>
+      </mat-select>
+      <mat-error>Member is required</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Email</mat-label>
-      <input matInput type="email" formControlName="email" placeholder="email@example.com">
-      <mat-error>Invalid email</mat-error>
+      <mat-label>Amount (฿)</mat-label>
+      <input matInput type="number" formControlName="amount" placeholder="e.g. 1500">
+      <mat-error>Amount is required</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Phone</mat-label>
-      <input matInput formControlName="phone" placeholder="08x-xxx-xxxx">
+      <mat-label>Payment Date</mat-label>
+      <input matInput [matDatepicker]="datePicker" formControlName="payment_date" placeholder="เลือกวันที่">
+      <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
+      <mat-datepicker #datePicker></mat-datepicker>
+      <mat-error>Payment date is required</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Method</mat-label>
+      <mat-select formControlName="method">
+        <mat-option value="cash">Cash (เงินสด)</mat-option>
+        <mat-option value="transfer">Transfer (โอน)</mat-option>
+        <mat-option value="credit_card">Credit Card (บัตรเครดิต)</mat-option>
+        <mat-option value="promptpay">PromptPay (พร้อมเพย์)</mat-option>
+      </mat-select>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Status</mat-label>
       <mat-select formControlName="status">
-        <mat-option value="active">Active</mat-option>
-        <mat-option value="inactive">Inactive</mat-option>
+        <mat-option value="paid">Paid (ชำระแล้ว)</mat-option>
+        <mat-option value="pending">Pending (รอชำระ)</mat-option>
+        <mat-option value="refunded">Refunded (คืนเงิน)</mat-option>
       </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Notes</mat-label>
+      <textarea matInput formControlName="notes" rows="2" placeholder="หมายเหตุ..."></textarea>
     </mat-form-field>
   </form>
 </mat-dialog-content>

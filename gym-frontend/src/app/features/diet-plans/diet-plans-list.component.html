@@ -1,11 +1,35 @@
+<!-- Stat Cards -->
+<div class="stat-grid">
+  <mat-card class="stat-card animate-fade-in">
+    <div class="stat-icon total"><mat-icon>restaurant_menu</mat-icon></div>
+    <div class="stat-info"><span class="stat-value">{{ totalPlans }}</span><span class="stat-label">Total Plans</span></div>
+  </mat-card>
+  <mat-card class="stat-card animate-fade-in">
+    <div class="stat-icon active"><mat-icon>check_circle</mat-icon></div>
+    <div class="stat-info"><span class="stat-value">{{ activePlans }}</span><span class="stat-label">Active Plans</span></div>
+  </mat-card>
+  <mat-card class="stat-card animate-fade-in">
+    <div class="stat-icon cal"><mat-icon>local_fire_department</mat-icon></div>
+    <div class="stat-info"><span class="stat-value">{{ avgCalories }}</span><span class="stat-label">Avg Calories</span></div>
+  </mat-card>
+</div>
+
 <div class="section-header animate-in">
   <div>
-    <div class="page-title">Diet <span>List</span></div>
+    <div class="page-title">Diet <span>Plans</span></div>
     <div class="page-sub">Manage all Diet Plans</div>
   </div>
-  <button class="gym-btn primary" (click)="openForm()">
-    <mat-icon>add</mat-icon> Add New
-  </button>
+  <div class="header-actions">
+    <button class="gym-btn outline" style="clip-path:none" (click)="exportCSV()" title="Export CSV">
+      <mat-icon>download</mat-icon> CSV
+    </button>
+    <button class="gym-btn outline" style="clip-path:none" (click)="exportPDF()" title="Export PDF">
+      <mat-icon>picture_as_pdf</mat-icon> PDF
+    </button>
+    <button class="gym-btn primary" (click)="openForm()" *ngIf="permissionService.canCreate('diets')">
+      <mat-icon>add</mat-icon> Add New
+    </button>
+  </div>
 </div>
 
 <mat-card class="table-card animate-in">
@@ -17,19 +41,36 @@
   </div>
 
   <mat-table [dataSource]="dataSource">
-    <ng-container *ngFor="let col of displayedColumns.slice(0,-1)" [matColumnDef]="col">
-      <mat-header-cell *matHeaderCellDef>{{ col | titlecase }}</mat-header-cell>
-      <mat-cell *matCellDef="let row">
-        <span *ngIf="col !== 'status'">{{ row[col] }}</span>
-        <span *ngIf="col === 'status'" class="gym-badge" [class]="row[col]">{{ row[col] }}</span>
-      </mat-cell>
+    <ng-container matColumnDef="member_name">
+      <mat-header-cell *matHeaderCellDef>Member</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{ row.member_name }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="trainer_name">
+      <mat-header-cell *matHeaderCellDef>Trainer</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{ row.trainer_name }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="calories">
+      <mat-header-cell *matHeaderCellDef>Calories</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{ row.calories || '-' }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="start_date">
+      <mat-header-cell *matHeaderCellDef>Start Date</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{ formatDate(row.start_date) }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="end_date">
+      <mat-header-cell *matHeaderCellDef>End Date</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{ formatDate(row.end_date) }}</mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="actions">
       <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
       <mat-cell *matCellDef="let row">
-        <button mat-icon-button (click)="openForm(row)" style="color:#888"><mat-icon>edit</mat-icon></button>
-        <button mat-icon-button (click)="delete(row.id)" style="color:#e8003d"><mat-icon>delete_outline</mat-icon></button>
+        <button mat-icon-button (click)="openForm(row)" *ngIf="permissionService.canUpdate('diets')" style="color:#888"><mat-icon>edit</mat-icon></button>
+        <button mat-icon-button (click)="delete(row.id)" *ngIf="permissionService.canDelete('diets')" style="color:#e8003d"><mat-icon>delete_outline</mat-icon></button>
       </mat-cell>
     </ng-container>
 

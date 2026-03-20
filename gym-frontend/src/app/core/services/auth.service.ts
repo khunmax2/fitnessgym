@@ -23,9 +23,9 @@ export class AuthService {
     );
   }
 
-  register(name: string, email: string, password: string, phone?: string): Observable<any> {
+  register(name: string, email: string, password: string, phone?: string, date_of_birth?: string, gender?: string): Observable<any> {
     // ไม่ auto-login หลังสมัคร
-    return this.http.post<any>(`${this.apiUrl}/register`, { name, email, password, phone });
+    return this.http.post<any>(`${this.apiUrl}/register`, { name, email, password, phone, date_of_birth, gender });
   }
 
   private saveSession(res: any): void {

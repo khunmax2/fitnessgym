@@ -1,22 +1,46 @@
 <h2 mat-dialog-title>{{ isEdit ? 'Edit' : 'Add' }} Trainer</h2>
 
 <mat-dialog-content>
-  <form [formGroup]="form" class="form-grid">
+  <form [formGroup]="form" class="form-grid" style="display: grid; gap: 12px;">
+    <ng-container *ngIf="!isEdit">
+      <mat-form-field appearance="outline" class="full-width" style="margin-bottom: 12px;">
+        <mat-label>Select pending user</mat-label >
+        <mat-select [(value)]="selectedPendingUserId" (selectionChange)="onPendingUserSelected()" required>
+          <mat-option [value]="null">-- choose user --</mat-option>
+          <mat-option *ngFor="let u of pendingUsers" [value]="u.id">
+            {{ u.name || 'No name' }} - {{ u.email }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <!-- <p style="font-size: 0.9rem; color: #888; margin-top: -10px;">Name, Email, Phone are auto-filled and read-only</p> -->
+    </ng-container>
+
+    <ng-container *ngIf="isEdit || selectedPendingUser">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="name" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" formControlName="email" readonly>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Phone</mat-label>
+        <input matInput formControlName="phone" readonly>
+      </mat-form-field>
+    </ng-container>
+
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Name</mat-label>
-      <input matInput formControlName="name" placeholder="Enter name">
-      <mat-error>Name is required</mat-error>
+      <mat-label>Specialty</mat-label>
+      <input matInput formControlName="specialty" placeholder="e.g. yoga, weightlifting">
+      <mat-error>Specialty is required</mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Email</mat-label>
-      <input matInput type="email" formControlName="email" placeholder="email@example.com">
-      <mat-error>Invalid email</mat-error>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline" class="full-width">
-      <mat-label>Phone</mat-label>
-      <input matInput formControlName="phone" placeholder="08x-xxx-xxxx">
+      <mat-label>Bio</mat-label>
+      <textarea matInput formControlName="bio" placeholder="Short bio"></textarea>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">

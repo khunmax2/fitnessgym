@@ -1,35 +1,70 @@
+<!-- STATS -->
+<div class="stats-grid animate-in">
+  <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-label">Total Schedules</div><div class="stat-value">{{ total }}</div><div class="stat-sub">All bookings</div></div>
+  <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-label">Booked</div><div class="stat-value"><span>{{ bookedCount }}</span></div><div class="stat-sub">Upcoming</div></div>
+  <div class="stat-card"><div class="stat-icon">✔️</div><div class="stat-label">Completed</div><div class="stat-value">{{ completedCount }}</div><div class="stat-sub">Finished</div></div>
+  <div class="stat-card"><div class="stat-icon">❌</div><div class="stat-label">Cancelled</div><div class="stat-value"><span>{{ cancelledCount }}</span></div><div class="stat-sub" style="color:#e8003d">Dropped</div></div>
+</div>
+
 <div class="section-header animate-in">
   <div>
-    <div class="page-title">Schedules <span>List</span></div>
-    <div class="page-sub">Manage all Schedules</div>
+    <div class="page-title">Schedule <span>List</span></div>
+    <div class="page-sub">{{ total }} schedules registered</div>
   </div>
-  <button class="gym-btn primary" (click)="openForm()">
-    <mat-icon>add</mat-icon> Add New
-  </button>
+  <div style="display:flex;gap:8px;align-items:center">
+    <button class="gym-btn outline" style="clip-path:none" (click)="exportCSV()" title="Export CSV">
+      <mat-icon>download</mat-icon> CSV
+    </button>
+    <button class="gym-btn outline" style="clip-path:none" (click)="exportPDF()" title="Export PDF">
+      <mat-icon>picture_as_pdf</mat-icon> PDF
+    </button>
+    <button class="gym-btn primary" (click)="openForm()" *ngIf="perm.canCreate('schedules')">
+      <mat-icon>add</mat-icon> Add Schedule
+    </button>
+  </div>
 </div>
 
 <mat-card class="table-card animate-in">
   <div class="search-row">
     <mat-form-field appearance="outline" class="search-field">
       <mat-icon matPrefix>search</mat-icon>
-      <input matInput (input)="applyFilter($event)" placeholder="Search Schedules...">
+      <input matInput (input)="applyFilter($event)" placeholder="Search schedules...">
     </mat-form-field>
   </div>
 
   <mat-table [dataSource]="dataSource">
-    <ng-container *ngFor="let col of displayedColumns.slice(0,-1)" [matColumnDef]="col">
-      <mat-header-cell *matHeaderCellDef>{{ col | titlecase }}</mat-header-cell>
+    <ng-container matColumnDef="class_name">
+      <mat-header-cell *matHeaderCellDef>Class</mat-header-cell>
       <mat-cell *matCellDef="let row">
-        <span *ngIf="col !== 'status'">{{ row[col] }}</span>
-        <span *ngIf="col === 'status'" class="gym-badge" [class]="row[col]">{{ row[col] }}</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <mat-icon style="color:#e8003d">school</mat-icon>
+          {{ row.class_name }}
+        </div>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="member_name">
+      <mat-header-cell *matHeaderCellDef>Member</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{ row.member_name }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="scheduled_at">
+      <mat-header-cell *matHeaderCellDef>Scheduled At</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{ formatDate(row.scheduled_at) }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <mat-header-cell *matHeaderCellDef>Status</mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <span class="gym-badge" [class]="row.status">{{ row.status | titlecase }}</span>
       </mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="actions">
       <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
       <mat-cell *matCellDef="let row">
-        <button mat-icon-button (click)="openForm(row)" style="color:#888"><mat-icon>edit</mat-icon></button>
-        <button mat-icon-button (click)="delete(row.id)" style="color:#e8003d"><mat-icon>delete_outline</mat-icon></button>
+        <button mat-icon-button (click)="openForm(row)" style="color:#888" *ngIf="perm.canUpdate('schedules')"><mat-icon>edit</mat-icon></button>
+        <button mat-icon-button (click)="delete(row.id)" style="color:#e8003d" *ngIf="perm.canDelete('schedules')"><mat-icon>delete_outline</mat-icon></button>
       </mat-cell>
     </ng-container>
 

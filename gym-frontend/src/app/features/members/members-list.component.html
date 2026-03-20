@@ -19,6 +19,7 @@
     <button class="gym-btn outline" style="clip-path:none" (click)="exportPDF()" title="Export PDF">
       <mat-icon>picture_as_pdf</mat-icon> PDF
     </button>
+    <!-- Add Member modal now includes pending user selection -->
     <!-- Add — only if can create -->
     <button class="gym-btn primary" (click)="openForm()" *ngIf="perm.canCreate('members')">
       <mat-icon>add</mat-icon> Add Member
@@ -41,7 +42,18 @@
         <div class="member-name">
           <div class="member-avatar" [style.background]="getAvatarBg(row.name)">{{ getInitials(row.name) }}</div>
           {{ row.name }}
+          <mat-icon *ngIf="row.medical_conditions" style="color:#e8003d;font-size:16px;margin-left:4px" matTooltip="{{ row.medical_conditions }}">medical_services</mat-icon>
         </div>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="gender">
+      <mat-header-cell *matHeaderCellDef>Gender</mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <span *ngIf="row.gender === 'male'">👨 ชาย</span>
+        <span *ngIf="row.gender === 'female'">👩 หญิง</span>
+        <span *ngIf="row.gender === 'other'">🧑 อื่นๆ</span>
+        <span *ngIf="!row.gender">-</span>
       </mat-cell>
     </ng-container>
 

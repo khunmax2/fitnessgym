@@ -60,6 +60,7 @@ SUPABASE_URL=https://<your-project>.supabase.co
 SUPABASE_KEY=<your-anon-key>
 JWT_SECRET=my-super-secret-key-change-this
 JWT_EXPIRES_IN=7d
+PROMTPAY_ID=YOUR_PROMTPAY_ID
 ```
 
 ติดตั้ง dependencies และรัน backend:

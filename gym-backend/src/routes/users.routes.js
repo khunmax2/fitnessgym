@@ -59,7 +59,7 @@ router.get('/', auth, role('admin'), async (req, res) => {
 });
 
 // GET pending member-users (in users.role='member' or 'trainer' but not yet in members)
-router.get('/pending-members', auth, role('admin'), async (req, res) => {
+router.get('/pending-members', auth, role('admin', 'staff'), async (req, res) => {
   const [usersRes, membersRes] = await Promise.all([
     supabase.from('users').select('id,name,email,phone,role,date_of_birth,gender,created_at').in('role', ['member', 'trainer']),
     supabase.from('members').select('id')
@@ -72,7 +72,7 @@ router.get('/pending-members', auth, role('admin'), async (req, res) => {
 });
 
 // GET pending trainer-users (role member or trainer, but not yet in trainers)
-router.get('/pending-trainers', auth, role('admin'), async (req, res) => {
+router.get('/pending-trainers', auth, role('admin', 'staff'), async (req, res) => {
   const [usersRes, trainersRes] = await Promise.all([
     supabase.from('users').select('id,name,email,phone,role,date_of_birth,gender,created_at').in('role', ['member','trainer']),
     supabase.from('trainers').select('id')
@@ -99,6 +99,36 @@ router.patch('/:id/role', auth, role('admin'), async (req, res) => {
     .eq('id', req.params.id)
     .select('id,name,email,role').single();
   if (error) return res.status(400).json({ error: error.message });
+  res.json(data);
+});
+
+// PUT update user profile — admin only
+router.put('/:id', auth, role('admin'), async (req, res) => {
+  const { name, phone, email, date_of_birth, gender } = req.body;
+  if (!name || !name.trim())
+    return res.status(400).json({ error: 'Name is required' });
+  if (gender && !['male', 'female', 'other'].includes(gender))
+    return res.status(400).json({ error: 'Gender must be male, female, or other' });
+
+  const updateData = {
+    name: name.trim(),
+    phone: phone || null,
+    date_of_birth: date_of_birth || null,
+    gender: gender || null
+  };
+  // Allow email change only if provided and different
+  if (email && email.trim()) {
+    updateData.email = email.trim().toLowerCase();
+  }
+
+  const { data, error } = await supabase
+    .from('users').update(updateData)
+    .eq('id', req.params.id)
+    .select('id,name,email,role,phone,date_of_birth,gender,created_at').single();
+  if (error) {
+    if (error.message.includes('unique')) return res.status(400).json({ error: 'Email already in use' });
+    return res.status(400).json({ error: error.message });
+  }
   res.json(data);
 });
 

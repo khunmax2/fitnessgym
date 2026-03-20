@@ -18,9 +18,11 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { PaymentListComponent } from './payments-list.component';
 import { PaymentFormComponent } from './payments-form.component';
+import { PromptpayQrDialogComponent } from './promptpay-qr-dialog.component';
+import { RefundDialogComponent } from './refund-dialog.component';
 
 @NgModule({
-  declarations: [PaymentListComponent, PaymentFormComponent],
+  declarations: [PaymentListComponent, PaymentFormComponent, PromptpayQrDialogComponent, RefundDialogComponent],
   imports: [
     CommonModule, ReactiveFormsModule, FormsModule,
     RouterModule.forChild([

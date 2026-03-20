@@ -25,6 +25,16 @@
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Payment Type (ประเภท)</mat-label>
+      <mat-select formControlName="payment_type">
+        <mat-option value="membership_fee">Membership Fee (ค่าสมาชิก)</mat-option>
+        <mat-option value="personal_training">Personal Training (เทรนส่วนตัว)</mat-option>
+        <mat-option value="class_fee">Class Fee (ค่าคอร์ส)</mat-option>
+        <mat-option value="other">Other (อื่นๆ)</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
       <mat-label>Method</mat-label>
       <mat-select formControlName="method">
         <mat-option value="cash">Cash (เงินสด)</mat-option>
@@ -43,6 +53,28 @@
       </mat-select>
     </mat-form-field>
 
+    <div *ngIf="isPromptPay && !isEdit" class="promptpay-hint">
+      <mat-icon>qr_code_2</mat-icon>
+      <span>เมื่อกด Create ระบบจะสร้าง QR Code สำหรับสแกนจ่ายเงินอัตโนมัติ</span>
+    </div>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Transaction Ref (เลขอ้างอิง)</mat-label>
+      <input matInput formControlName="transaction_ref" placeholder="เลขอ้างอิงธุรกรรม...">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Due Date (วันครบกำหนด)</mat-label>
+      <input matInput [matDatepicker]="duePicker" formControlName="due_date" placeholder="เลือกวันครบกำหนด">
+      <mat-datepicker-toggle matSuffix [for]="duePicker"></mat-datepicker-toggle>
+      <mat-datepicker #duePicker></mat-datepicker>
+    </mat-form-field>
+
+    <div *ngIf="isEdit && data?.payment?.invoice_number" class="invoice-display">
+      <mat-icon>receipt</mat-icon>
+      <span>Invoice: {{ data.payment.invoice_number }}</span>
+    </div>
+
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Notes</mat-label>
       <textarea matInput formControlName="notes" rows="2" placeholder="หมายเหตุ..."></textarea>
@@ -53,6 +85,7 @@
 <mat-dialog-actions align="end">
   <button mat-button (click)="onCancel()">Cancel</button>
   <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="loading || form.invalid">
-    {{ loading ? 'Saving...' : (isEdit ? 'Update' : 'Create') }}
+    <mat-icon *ngIf="isPromptPay && !isEdit">qr_code_2</mat-icon>
+    {{ loading ? 'Saving...' : (isPromptPay && !isEdit ? 'Create & Show QR' : (isEdit ? 'Update' : 'Create')) }}
   </button>
 </mat-dialog-actions>

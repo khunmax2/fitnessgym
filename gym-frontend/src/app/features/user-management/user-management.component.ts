@@ -1,7 +1,9 @@
 import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 import { AuthService } from '../../core/services/auth.service';
+import { EditUserDialogComponent } from './edit-user-dialog.component';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { FormsModule } from '@angular/forms';
@@ -17,7 +19,7 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<any>([]);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  constructor(private http: HttpClient, private snack: MatSnackBar, public authService: AuthService) {}
+  constructor(private http: HttpClient, private snack: MatSnackBar, private dialog: MatDialog, public authService: AuthService) {}
 
   // Stats
   get total()    { return this.dataSource.data.length; }
@@ -109,6 +111,14 @@ export class UserManagementComponent implements OnInit, AfterViewInit {
       next: () => { this.snack.open('User deleted', 'Close', { duration: 3000 }); this.load(); this.loadPendingLists(); },
       error: (err) => this.snack.open(err.error?.error || 'Delete failed', 'Close', { duration: 3000 })
     });
+  }
+
+  editUser(user: any): void {
+    const ref = this.dialog.open(EditUserDialogComponent, {
+      width: '480px',
+      data: { user }
+    });
+    ref.afterClosed().subscribe(result => { if (result) this.load(); });
   }
 
   addMemberFromUser(user: any): void {
